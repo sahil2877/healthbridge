@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationBellComponent } from '../../shared/notification-bell.component';
 
 // Shell for the authenticated area: navbar + <router-outlet/>
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, NotificationBellComponent],
   template: `
     <header class="navbar">
       <div class="navbar-inner">
@@ -23,6 +24,7 @@ import { AuthService } from '../../services/auth.service';
           <a routerLink="/lab-orders" routerLinkActive="active">Lab Orders</a>
           <a routerLink="/screening" routerLinkActive="active">Screening</a>
           <a routerLink="/audit" routerLinkActive="active" *ngIf="auth.hasRole('admin')">Audit</a>
+          <app-notification-bell />
           <span class="user-chip" *ngIf="auth.currentUser() as u">
             {{ u.name }} <span class="badge">{{ u.role }}</span>
           </span>

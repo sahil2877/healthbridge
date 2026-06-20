@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationBellComponent } from '../../shared/notification-bell.component';
 
 // Desktop web layout for the patient portal: top navbar + content outlet
 // (consistent with the provider console — no mobile bottom tabs).
 @Component({
   selector: 'app-portal-layout',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, NotificationBellComponent],
   template: `
     <header class="navbar">
       <div class="navbar-inner">
@@ -19,6 +20,7 @@ import { AuthService } from '../../services/auth.service';
           <a routerLink="/portal/orders" routerLinkActive="active">My Orders</a>
           <a routerLink="/portal/vitals" routerLinkActive="active">My Health</a>
           <a routerLink="/portal/profile" routerLinkActive="active">Profile</a>
+          <app-notification-bell />
           <span class="user-chip" *ngIf="auth.currentUser() as u">{{ u.name }}</span>
           <button class="btn btn-ghost btn-sm" (click)="logout()">Logout</button>
         </nav>

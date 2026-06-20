@@ -29,6 +29,7 @@ app.use('/api/prescriptions', require('./routes/prescriptions'));
 app.use('/api/invoices', require('./routes/invoices'));
 app.use('/api/insurance', require('./routes/insurance'));
 app.use('/api/lab', require('./routes/lab'));
+app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/audit', require('./routes/audit'));
 app.use('/api/screening', require('./routes/screening'));

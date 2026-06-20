@@ -3,6 +3,7 @@
   const Appointment = require('../models/Appointment');
   const auth = require('../middleware/auth');
   const role = require('../middleware/role');
+  const notify = require('../utils/notify');
 
   // All routes in this file require login
   router.use(auth);
@@ -13,6 +14,13 @@
   router.post('/', async (req, res) => {
     try {
       const appointment = await Appointment.create({ ...req.body, bookedBy: req.user.id });
+      // Notify the assigned doctor about the new appointment
+      notify(appointment.doctor, {
+        type: 'appointment',
+        title: 'New appointment booked',
+        body: `An appointment was scheduled for ${new Date(appointment.date).toLocaleString()}.`,
+        link: '/appointments'
+      });
       res.status(201).json(appointment);
     } catch (err) {
       res.status(400).json({ message: 'Could not book appointment', error: err.message });

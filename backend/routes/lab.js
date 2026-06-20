@@ -4,6 +4,7 @@ const LabPackage = require('../models/LabPackage');
 const LabOrder = require('../models/LabOrder');
 const auth = require('../middleware/auth');
 const role = require('../middleware/role');
+const notify = require('../utils/notify');
 
 router.use(auth); // all routes require login
 
@@ -92,6 +93,17 @@ router.patch('/orders/:id/status', role('admin', 'doctor', 'staff'), async (req,
 
     const order = await LabOrder.findByIdAndUpdate(req.params.id, update, { new: true });
     if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // Notify the patient who booked about the status change
+    if (status) {
+      const labels = { collected: 'Sample collected', in_lab: 'Sample in lab', report_ready: 'Report ready', cancelled: 'Order cancelled' };
+      notify(order.bookedBy, {
+        type: 'lab',
+        title: `Lab order ${order.orderNumber}: ${labels[status] || status}`,
+        body: status === 'report_ready' ? 'Your report is ready to view.' : 'Your lab order status was updated.',
+        link: '/portal/orders'
+      });
+    }
     res.json(order);
   } catch (err) {
     res.status(400).json({ message: 'Could not update order', error: err.message });
