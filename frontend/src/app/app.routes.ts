@@ -18,6 +18,9 @@ import { InvoiceFormComponent } from './pages/invoice-form/invoice-form.componen
 import { InvoiceViewComponent } from './pages/invoice-view/invoice-view.component';
 import { ScreeningComponent } from './pages/screening/screening.component';
 import { AuditComponent } from './pages/audit/audit.component';
+import { InsuranceComponent } from './pages/insurance/insurance.component';
+import { PolicyFormComponent } from './pages/insurance/policy-form.component';
+import { ClaimFormComponent } from './pages/insurance/claim-form.component';
 import { PortalLayoutComponent } from './pages/portal/portal-layout.component';
 import { PortalHomeComponent } from './pages/portal/portal-home.component';
 import { PortalCareComponent } from './pages/portal/portal-care.component';
@@ -76,6 +79,12 @@ export const routes: Routes = [
       { path: 'invoices/:id/edit', component: InvoiceFormComponent },
 
       { path: 'screening', component: ScreeningComponent },
+
+      { path: 'insurance', component: InsuranceComponent },
+      { path: 'insurance/policies/new', component: PolicyFormComponent },
+      { path: 'insurance/policies/:id/edit', component: PolicyFormComponent },
+      { path: 'insurance/claims/new', component: ClaimFormComponent },
+      { path: 'insurance/claims/:id/edit', component: ClaimFormComponent },
 
       { path: 'audit', component: AuditComponent }
     ]
