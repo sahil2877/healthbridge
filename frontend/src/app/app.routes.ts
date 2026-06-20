@@ -17,6 +17,7 @@ import { InvoiceListComponent } from './pages/invoice-list/invoice-list.componen
 import { InvoiceFormComponent } from './pages/invoice-form/invoice-form.component';
 import { InvoiceViewComponent } from './pages/invoice-view/invoice-view.component';
 import { ScreeningComponent } from './pages/screening/screening.component';
+import { AuditComponent } from './pages/audit/audit.component';
 import { PortalLayoutComponent } from './pages/portal/portal-layout.component';
 import { PortalHomeComponent } from './pages/portal/portal-home.component';
 import { PortalCareComponent } from './pages/portal/portal-care.component';
@@ -74,7 +75,9 @@ export const routes: Routes = [
       { path: 'invoices/:id', component: InvoiceViewComponent },
       { path: 'invoices/:id/edit', component: InvoiceFormComponent },
 
-      { path: 'screening', component: ScreeningComponent }
+      { path: 'screening', component: ScreeningComponent },
+
+      { path: 'audit', component: AuditComponent }
     ]
   },
 

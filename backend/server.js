@@ -9,6 +9,7 @@ const app = express();
 app.use(cors());                       // Allows Angular (port 4200) to call the backend (5000)
 app.use(express.json());               // Parses the request body as JSON
 app.use('/uploads', express.static('uploads')); // Serves uploaded documents
+app.use(require('./middleware/auditLogger')); // Records authenticated write actions
 
 // Connect to the database
 connectDB();
@@ -27,6 +28,7 @@ app.use('/api/records', require('./routes/records'));
 app.use('/api/prescriptions', require('./routes/prescriptions'));
 app.use('/api/invoices', require('./routes/invoices'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/audit', require('./routes/audit'));
 app.use('/api/screening', require('./routes/screening'));
 
 const PORT = process.env.PORT || 5000;
