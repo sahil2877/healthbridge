@@ -20,6 +20,7 @@ import { AuthService } from '../../services/auth.service';
           <a routerLink="/prescriptions" routerLinkActive="active">Prescriptions</a>
           <a routerLink="/invoices" routerLinkActive="active">Billing</a>
           <a routerLink="/insurance" routerLinkActive="active">Insurance</a>
+          <a routerLink="/lab-orders" routerLinkActive="active">Lab Orders</a>
           <a routerLink="/screening" routerLinkActive="active">Screening</a>
           <a routerLink="/audit" routerLinkActive="active" *ngIf="auth.hasRole('admin')">Audit</a>
           <span class="user-chip" *ngIf="auth.currentUser() as u">

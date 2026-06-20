@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
         <nav>
           <a routerLink="/portal/home" routerLinkActive="active">Home</a>
           <a routerLink="/portal/care" routerLinkActive="active">Book Tests</a>
+          <a routerLink="/portal/orders" routerLinkActive="active">My Orders</a>
           <a routerLink="/portal/vitals" routerLinkActive="active">My Health</a>
           <a routerLink="/portal/profile" routerLinkActive="active">Profile</a>
           <span class="user-chip" *ngIf="auth.currentUser() as u">{{ u.name }}</span>

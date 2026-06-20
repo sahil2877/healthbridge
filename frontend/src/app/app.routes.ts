@@ -18,6 +18,7 @@ import { InvoiceListComponent } from './pages/invoice-list/invoice-list.componen
 import { InvoiceFormComponent } from './pages/invoice-form/invoice-form.component';
 import { InvoiceViewComponent } from './pages/invoice-view/invoice-view.component';
 import { ScreeningComponent } from './pages/screening/screening.component';
+import { LabOrdersComponent } from './pages/lab-orders/lab-orders.component';
 import { AuditComponent } from './pages/audit/audit.component';
 import { InsuranceComponent } from './pages/insurance/insurance.component';
 import { PolicyFormComponent } from './pages/insurance/policy-form.component';
@@ -25,6 +26,7 @@ import { ClaimFormComponent } from './pages/insurance/claim-form.component';
 import { PortalLayoutComponent } from './pages/portal/portal-layout.component';
 import { PortalHomeComponent } from './pages/portal/portal-home.component';
 import { PortalCareComponent } from './pages/portal/portal-care.component';
+import { PortalOrdersComponent } from './pages/portal/portal-orders.component';
 import { PortalVitalsComponent } from './pages/portal/portal-vitals.component';
 import { PortalProfileComponent } from './pages/portal/portal-profile.component';
 
@@ -42,6 +44,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: PortalHomeComponent },
       { path: 'care', component: PortalCareComponent },
+      { path: 'orders', component: PortalOrdersComponent },
       { path: 'vitals', component: PortalVitalsComponent },
       { path: 'profile', component: PortalProfileComponent }
     ]
@@ -80,6 +83,8 @@ export const routes: Routes = [
       { path: 'invoices/:id/edit', component: InvoiceFormComponent },
 
       { path: 'screening', component: ScreeningComponent },
+
+      { path: 'lab-orders', component: LabOrdersComponent },
 
       { path: 'insurance', component: InsuranceComponent },
       { path: 'insurance/policies/new', component: PolicyFormComponent },
