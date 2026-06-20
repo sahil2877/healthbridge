@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
       <div class="navbar-inner">
         <a class="brand" routerLink="/patients">🏥 HealthBridge</a>
         <nav>
+          <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
           <a routerLink="/patients" routerLinkActive="active">Patients</a>
           <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
           <a routerLink="/records" routerLinkActive="active">Records</a>

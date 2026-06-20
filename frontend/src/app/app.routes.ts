@@ -12,6 +12,7 @@ import { RecordFormComponent } from './pages/record-form/record-form.component';
 import { PrescriptionListComponent } from './pages/prescription-list/prescription-list.component';
 import { PrescriptionFormComponent } from './pages/prescription-form/prescription-form.component';
 import { PrescriptionViewComponent } from './pages/prescription-view/prescription-view.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { InvoiceListComponent } from './pages/invoice-list/invoice-list.component';
 import { InvoiceFormComponent } from './pages/invoice-form/invoice-form.component';
 import { InvoiceViewComponent } from './pages/invoice-view/invoice-view.component';
@@ -47,7 +48,9 @@ export const routes: Routes = [
     component: LayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'patients', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+
+      { path: 'dashboard', component: DashboardComponent },
 
       { path: 'patients', component: PatientListComponent },
       { path: 'patients/new', component: PatientFormComponent },
