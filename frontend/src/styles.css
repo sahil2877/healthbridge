@@ -131,6 +131,119 @@ tbody tr:hover { background: var(--bg); }
   .form-row { grid-template-columns: 1fr; }
 }
 
+/* ===================== Patient Portal (desktop web view) ===================== */
+/* Wide, responsive dashboard consistent with the rest of the app. */
+
+/* Greeting / hero banner */
+.portal-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  color: #fff; padding: 22px 26px; border-radius: var(--radius);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.portal-hero .hi { font-size: 1.5rem; font-weight: 800; }
+.portal-hero .loc { font-size: 0.85rem; opacity: 0.9; margin-top: 2px; }
+.portal-hero .wallet {
+  background: rgba(255,255,255,0.2); border-radius: 999px;
+  padding: 8px 16px; font-weight: 700; font-size: 0.95rem;
+}
+
+/* Search box */
+.portal-search {
+  display: flex; align-items: center; gap: 10px; background: #fff;
+  border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px;
+  box-shadow: var(--shadow); margin-bottom: 24px;
+}
+.portal-search input { border: none; outline: none; flex: 1; font-size: 1rem; }
+
+/* Section heading */
+.portal-h { font-weight: 800; font-size: 1.2rem; margin: 26px 2px 14px; }
+.portal-h small { font-weight: 500; color: var(--muted); display: block; font-size: 0.85rem; margin-top: 2px; }
+
+/* Cashback / promo banner */
+.promo {
+  background: linear-gradient(90deg, #0e7490, #0d9488); color: #fff;
+  border-radius: 14px; padding: 18px 24px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.promo .big { font-size: 1.5rem; font-weight: 800; }
+
+/* Responsive card grid (used for tiles, packages, segments, organ tests) */
+.grid { display: grid; gap: 16px; }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* Service tile */
+.tile {
+  background: #fff; border: 1px solid var(--border); border-radius: 14px;
+  padding: 20px 16px; text-align: center; box-shadow: var(--shadow);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.tile:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(15,23,42,0.1); }
+.tile .emoji { font-size: 2.2rem; }
+.tile .t { font-size: 0.95rem; font-weight: 700; margin-top: 8px; }
+.tile .o { font-size: 0.82rem; color: var(--primary); margin-top: 4px; }
+
+/* Package card */
+.pkg {
+  background: #fff; border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column;
+}
+.pkg .name { font-weight: 700; font-size: 0.98rem; min-height: 44px; }
+.pkg .tests { color: var(--primary); font-size: 0.85rem; margin: 8px 0; }
+.pkg .price { font-weight: 800; font-size: 1.15rem; }
+.pkg .mrp { color: var(--muted); text-decoration: line-through; font-size: 0.85rem; margin-left: 6px; }
+.pkg .btn { margin-top: 12px; }
+
+/* Care-plan / segment card */
+.seg {
+  background: #fff; border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px 14px; text-align: center; box-shadow: var(--shadow);
+}
+.seg .face { font-size: 2.6rem; }
+.seg .title { font-weight: 700; font-size: 1rem; margin-top: 8px; }
+.seg .sub { color: var(--muted); font-size: 0.8rem; }
+
+/* Filter chips */
+.chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip {
+  border: 1px solid var(--border); background: #fff; border-radius: 999px;
+  padding: 8px 18px; font-size: 0.88rem; font-weight: 600; color: var(--muted); cursor: pointer;
+}
+.chip.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+/* Health-score card */
+.score-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+}
+.score-ring {
+  width: 96px; height: 96px; border-radius: 50%; flex: 0 0 auto;
+  display: grid; place-items: center; font-weight: 800; font-size: 1.4rem;
+  background: conic-gradient(var(--primary) 0 72%, #e2e8f0 72% 100%);
+}
+.score-ring span { background: #fff; color: var(--text); width: 74px; height: 74px;
+  border-radius: 50%; display: grid; place-items: center; }
+
+/* Tracker card (grid) */
+.tracker {
+  display: flex; align-items: center; gap: 14px; background: #fff;
+  border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow);
+}
+.tracker .emoji { font-size: 1.8rem; }
+.tracker .t { font-weight: 700; flex: 1; }
+.tracker .plus { color: var(--primary); font-size: 1.6rem; font-weight: 700; cursor: pointer; }
+
+/* Checkup journey stepper (horizontal on desktop) */
+.journey {
+  background: #ecfeff; border-radius: 16px; padding: 24px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px;
+}
+.jstep { display: flex; gap: 12px; }
+.jstep .dot { font-size: 1.8rem; }
+.jstep .jt { font-weight: 700; font-size: 0.95rem; }
+.jstep .jd { color: var(--muted); font-size: 0.82rem; }
+
 /* ---- Print (used by the printable prescription view) ---- */
 @media print {
   /* Hide the app navbar, toolbars and anything marked .no-print */

@@ -54,6 +54,11 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {}
 
+  // Patients go to the consumer portal; staff/doctor/admin go to the provider console
+  private homeRoute(): string {
+    return this.auth.hasRole('patient') ? '/portal/home' : '/patients';
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -63,7 +68,7 @@ export class LoginComponent {
     this.error = '';
 
     this.auth.login(this.form.getRawValue() as { email: string; password: string }).subscribe({
-      next: () => this.router.navigate(['/patients']),
+      next: () => this.router.navigate([this.homeRoute()]),
       error: (err) => {
         this.error = err?.error?.message || 'Login failed. Please try again.';
         this.loading = false;

@@ -44,6 +44,7 @@ import { AuthService } from '../../services/auth.service';
             <div class="form-group">
               <label>Role</label>
               <select class="form-control" formControlName="role">
+                <option value="patient">Patient</option>
                 <option value="staff">Staff</option>
                 <option value="doctor">Doctor</option>
                 <option value="admin">Admin</option>
@@ -83,7 +84,7 @@ export class RegisterComponent {
     this.error = '';
 
     this.auth.register(this.form.getRawValue() as { name: string; email: string; password: string; role: string }).subscribe({
-      next: () => this.router.navigate(['/patients']),
+      next: () => this.router.navigate([this.auth.hasRole('patient') ? '/portal/home' : '/patients']),
       error: (err) => {
         this.error = err?.error?.message || 'Registration failed. Please try again.';
         this.loading = false;

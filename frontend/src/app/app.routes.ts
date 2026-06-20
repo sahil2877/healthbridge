@@ -13,11 +13,30 @@ import { PrescriptionListComponent } from './pages/prescription-list/prescriptio
 import { PrescriptionFormComponent } from './pages/prescription-form/prescription-form.component';
 import { PrescriptionViewComponent } from './pages/prescription-view/prescription-view.component';
 import { ScreeningComponent } from './pages/screening/screening.component';
+import { PortalLayoutComponent } from './pages/portal/portal-layout.component';
+import { PortalHomeComponent } from './pages/portal/portal-home.component';
+import { PortalCareComponent } from './pages/portal/portal-care.component';
+import { PortalVitalsComponent } from './pages/portal/portal-vitals.component';
+import { PortalProfileComponent } from './pages/portal/portal-profile.component';
 
 export const routes: Routes = [
   // public routes
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+
+  // Patient portal (consumer area) — desktop web layout
+  {
+    path: 'portal',
+    component: PortalLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: PortalHomeComponent },
+      { path: 'care', component: PortalCareComponent },
+      { path: 'vitals', component: PortalVitalsComponent },
+      { path: 'profile', component: PortalProfileComponent }
+    ]
+  },
 
   // protected area (navbar shell + children) — locked by authGuard
   {
