@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Patient = jo onboard hota hai (resume ka "patient onboarding")
+// Patient = a person who is onboarded ("patient onboarding")
 const patientSchema = new mongoose.Schema({
   name:        { type: String, required: true },
   age:         { type: Number, required: true },
@@ -10,7 +10,7 @@ const patientSchema = new mongoose.Schema({
   address:     { type: String },
   bloodGroup:  { type: String, enum: ['A+','A-','B+','B-','O+','O-','AB+','AB-','Unknown'], default: 'Unknown' },
 
-  // kis user ne onboard kiya (User model se reference)
+  // Which user onboarded this patient (reference to the User model)
   onboardedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 

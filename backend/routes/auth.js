@@ -4,26 +4,26 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Helper: ek JWT token banata hai
+// Helper: creates a JWT token
 function createToken(user) {
   return jwt.sign(
     { id: user._id, name: user.name, role: user.role }, // payload
     process.env.JWT_SECRET,
-    { expiresIn: '7d' }                                  // 7 din baad expire
+    { expiresIn: '7d' }                                  // expires after 7 days
   );
 }
 
 // @route  POST /api/auth/register
-// @desc   Naya user banao
+// @desc   Create a new user
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // email already exist to nahi karta?
+    // Check whether the email already exists
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'Email already registered' });
 
-    // password ko hash karo (plain text kabhi store nahi karte)
+    // Hash the password (never store plain text)
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
@@ -40,7 +40,7 @@ router.post('/register', async (req, res) => {
 });
 
 // @route  POST /api/auth/login
-// @desc   Login karo aur token pao
+// @desc   Log in and receive a token
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -48,7 +48,7 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // password match karo
+    // Verify the password matches
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: 'Invalid credentials' });
 

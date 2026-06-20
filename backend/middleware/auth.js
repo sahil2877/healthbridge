@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-// Yeh function har protected request se pehle chalega
+// This function runs before every protected request
 function auth(req, res, next) {
-  // Token "Authorization: Bearer <token>" header mein aata hai
+  // The token arrives in the "Authorization: Bearer <token>" header
   const header = req.header('Authorization');
   if (!header || !header.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token, authorization denied' });
@@ -10,9 +10,9 @@ function auth(req, res, next) {
 
   const token = header.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // token sahi hai?
-    req.user = decoded; // user ki info aage routes ko mil jati hai
-    next();             // sab theek -> aage badho
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // is the token valid?
+    req.user = decoded; // pass the user info on to the routes
+    next();             // all good -> continue
   } catch (err) {
     res.status(401).json({ message: 'Token is not valid' });
   }

@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Patient = require('../models/Patient');
 const auth = require('../middleware/auth');
+const role = require('../middleware/role');
 
-// router.use(auth) -> is file ke saare routes par login zaroori
+// router.use(auth) -> all routes in this file require login
 router.use(auth);
 
 // @route  POST /api/patients  -> patient onboarding
@@ -16,11 +17,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-// @route  GET /api/patients  -> saare patients (search ke saath)
+// @route  GET /api/patients  -> all patients (with search)
 router.get('/', async (req, res) => {
   try {
     const { search } = req.query;
-    // agar search diya hai to name/phone par filter karo
+    // If a search term is provided, filter by name/phone
     const filter = search
       ? { $or: [
           { name:  { $regex: search, $options: 'i' } },
@@ -34,7 +35,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route  GET /api/patients/:id  -> ek patient ki detail
+// @route  GET /api/patients/:id  -> details of a single patient
 router.get('/:id', async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
@@ -45,7 +46,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route  PUT /api/patients/:id  -> update
+// @route  PUT /api/patients/:id  -> update a patient
 router.put('/:id', async (req, res) => {
   try {
     const patient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -56,8 +57,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// @route  DELETE /api/patients/:id  -> delete
-router.delete('/:id', async (req, res) => {
+// @route  DELETE /api/patients/:id  -> delete a patient (admin only)
+router.delete('/:id', role('admin'), async (req, res) => {
   try {
     const patient = await Patient.findByIdAndDelete(req.params.id);
     if (!patient) return res.status(404).json({ message: 'Patient not found' });
