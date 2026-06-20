@@ -130,3 +130,12 @@ tbody tr:hover { background: var(--bg); }
 @media (max-width: 600px) {
   .form-row { grid-template-columns: 1fr; }
 }
+
+/* ---- Print (used by the printable prescription view) ---- */
+@media print {
+  /* Hide the app navbar, toolbars and anything marked .no-print */
+  .navbar, .no-print { display: none !important; }
+  body { background: #fff; }
+  .container { padding: 0; max-width: 100%; }
+  .card { border: none; box-shadow: none; }
+}
