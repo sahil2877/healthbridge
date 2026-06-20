@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 const role = require('../middleware/role');
 
 router.use(auth); // all routes require login
+router.use(role('admin', 'doctor', 'staff')); // provider-only area
 
 // Recompute money fields from items, payments, tax and discount
 function recalc(invoice) {

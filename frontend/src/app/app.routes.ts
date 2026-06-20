@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LayoutComponent } from './pages/layout/layout.component';
@@ -36,7 +37,7 @@ export const routes: Routes = [
   {
     path: 'portal',
     component: PortalLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard('patient')],
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: PortalHomeComponent },
@@ -50,7 +51,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard('admin', 'doctor', 'staff')],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 

@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 const role = require('../middleware/role');
 
 router.use(auth); // all routes require login
+router.use(role('admin', 'doctor', 'staff')); // provider-only area
 
 // @route  POST /api/prescriptions  -> create a prescription (admin or doctor)
 router.post('/', role('admin', 'doctor'), async (req, res) => {

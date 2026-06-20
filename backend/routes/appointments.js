@@ -6,6 +6,8 @@
 
   // All routes in this file require login
   router.use(auth);
+  // Provider-only area (admin/doctor/staff)
+  router.use(role('admin', 'doctor', 'staff'));
 
   // @route  POST /api/appointments  -> book a new appointment
   router.post('/', async (req, res) => {

@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 const role = require('../middleware/role');
 
 router.use(auth);
+router.use(role('admin', 'doctor', 'staff')); // provider-only area
 
 /* ----------------------------- Policies ----------------------------- */
 

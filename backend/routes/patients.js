@@ -6,6 +6,8 @@ const role = require('../middleware/role');
 
 // router.use(auth) -> all routes in this file require login
 router.use(auth);
+// Provider-only area: patients (consumer role) cannot access these endpoints
+router.use(role('admin', 'doctor', 'staff'));
 
 // @route  POST /api/patients  -> patient onboarding
 router.post('/', async (req, res) => {

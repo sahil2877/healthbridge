@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const role = require('../middleware/role');
 
 router.use(auth); // all routes require login
+router.use(role('admin', 'doctor', 'staff')); // provider-only area
 
 // @route  GET /api/users  -> list users (optionally filter by ?role=doctor)
 // Used by the frontend to populate the "doctor" dropdown when booking.

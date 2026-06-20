@@ -7,6 +7,7 @@
   const upload = require('../middleware/upload');
 
   router.use(auth); // all routes require login
+  router.use(role('admin', 'doctor', 'staff')); // provider-only area
 
   // @route  POST /api/records  -> create a new clinical record (text data only)
   router.post('/', async (req, res) => {

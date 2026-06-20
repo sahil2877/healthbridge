@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Screening = require('../models/Screening');
 const auth = require('../middleware/auth');
+const role = require('../middleware/role');
 
 router.use(auth); // all routes require login
+router.use(role('admin', 'doctor', 'staff')); // provider-only area
 
 // --- Helper: compute BMI, risk and recommendations from the vitals ---
 function evaluate({ heightCm, weightKg, systolic, diastolic, smoker, diabetic }) {
