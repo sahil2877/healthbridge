@@ -12,6 +12,9 @@ import { RecordFormComponent } from './pages/record-form/record-form.component';
 import { PrescriptionListComponent } from './pages/prescription-list/prescription-list.component';
 import { PrescriptionFormComponent } from './pages/prescription-form/prescription-form.component';
 import { PrescriptionViewComponent } from './pages/prescription-view/prescription-view.component';
+import { InvoiceListComponent } from './pages/invoice-list/invoice-list.component';
+import { InvoiceFormComponent } from './pages/invoice-form/invoice-form.component';
+import { InvoiceViewComponent } from './pages/invoice-view/invoice-view.component';
 import { ScreeningComponent } from './pages/screening/screening.component';
 import { PortalLayoutComponent } from './pages/portal/portal-layout.component';
 import { PortalHomeComponent } from './pages/portal/portal-home.component';
@@ -62,6 +65,11 @@ export const routes: Routes = [
       { path: 'prescriptions/new', component: PrescriptionFormComponent },
       { path: 'prescriptions/:id', component: PrescriptionViewComponent },
       { path: 'prescriptions/:id/edit', component: PrescriptionFormComponent },
+
+      { path: 'invoices', component: InvoiceListComponent },
+      { path: 'invoices/new', component: InvoiceFormComponent },
+      { path: 'invoices/:id', component: InvoiceViewComponent },
+      { path: 'invoices/:id/edit', component: InvoiceFormComponent },
 
       { path: 'screening', component: ScreeningComponent }
     ]

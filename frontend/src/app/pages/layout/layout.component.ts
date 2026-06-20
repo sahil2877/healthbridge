@@ -17,6 +17,7 @@ import { AuthService } from '../../services/auth.service';
           <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
           <a routerLink="/records" routerLinkActive="active">Records</a>
           <a routerLink="/prescriptions" routerLinkActive="active">Prescriptions</a>
+          <a routerLink="/invoices" routerLinkActive="active">Billing</a>
           <a routerLink="/screening" routerLinkActive="active">Screening</a>
           <span class="user-chip" *ngIf="auth.currentUser() as u">
             {{ u.name }} <span class="badge">{{ u.role }}</span>
