@@ -18,6 +18,7 @@ import { NotificationBellComponent } from '../../shared/notification-bell.compon
           <a routerLink="/portal/home" routerLinkActive="active">Home</a>
           <a routerLink="/portal/care" routerLinkActive="active">Book Tests</a>
           <a routerLink="/portal/orders" routerLinkActive="active">My Orders</a>
+          <a routerLink="/portal/consult" routerLinkActive="active">Consult</a>
           <a routerLink="/portal/vitals" routerLinkActive="active">My Health</a>
           <a routerLink="/portal/profile" routerLinkActive="active">Profile</a>
           <app-notification-bell />
