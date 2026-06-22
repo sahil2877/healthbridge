@@ -13,35 +13,37 @@ import { Patient } from '../../models/patient.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>{{ isEdit ? 'Edit Patient' : 'Onboard Patient' }}</h2>
-        <a class="btn btn-ghost" routerLink="/patients">← Back</a>
+        <div class="page-title">
+          <h1>{{ isEdit ? 'Edit Patient' : 'Onboard Patient' }}</h1>
+          <p>{{ isEdit ? 'Update patient demographic details' : 'Register a new patient into HealthBridge' }}</p>
+        </div>
       </div>
 
       <div class="card">
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Full Name *</label>
+              <label class="form-label">Full Name *</label>
               <input class="form-control" type="text" formControlName="name" />
               <div class="field-error" *ngIf="invalid('name')">Name required</div>
             </div>
             <div class="form-group">
-              <label>Phone *</label>
+              <label class="form-label">Phone *</label>
               <input class="form-control" type="text" formControlName="phone" />
               <div class="field-error" *ngIf="invalid('phone')">Phone required</div>
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Age *</label>
+              <label class="form-label">Age *</label>
               <input class="form-control" type="number" formControlName="age" />
               <div class="field-error" *ngIf="invalid('age')">Valid age required</div>
             </div>
             <div class="form-group">
-              <label>Gender *</label>
+              <label class="form-label">Gender *</label>
               <select class="form-control" formControlName="gender">
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -50,13 +52,13 @@ import { Patient } from '../../models/patient.model';
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Email</label>
+              <label class="form-label">Email</label>
               <input class="form-control" type="email" formControlName="email" />
             </div>
             <div class="form-group">
-              <label>Blood Group</label>
+              <label class="form-label">Blood Group</label>
               <select class="form-control" formControlName="bloodGroup">
                 <option *ngFor="let bg of bloodGroups" [value]="bg">{{ bg }}</option>
               </select>
@@ -64,13 +66,17 @@ import { Patient } from '../../models/patient.model';
           </div>
 
           <div class="form-group">
-            <label>Address</label>
+            <label class="form-label">Address</label>
             <textarea class="form-control" rows="2" formControlName="address"></textarea>
           </div>
 
-          <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ loading ? 'Saving...' : (isEdit ? 'Update Patient' : 'Onboard Patient') }}
-          </button>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-floppy-disk]="!loading"></i>
+              {{ loading ? 'Saving...' : (isEdit ? 'Update Patient' : 'Onboard Patient') }}
+            </button>
+            <a class="btn btn-ghost" routerLink="/patients"><i class="fa-solid fa-xmark"></i> Cancel</a>
+          </div>
         </form>
       </div>
     </div>

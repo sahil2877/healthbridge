@@ -24,6 +24,11 @@ export class AppointmentService {
     return this.http.post<Appointment>(this.api, data);
   }
 
+  // Patient self-booking — the server fills in the patient from the login.
+  book(data: { doctor: string; date: string; reason: string }): Observable<Appointment> {
+    return this.http.post<Appointment>(this.api, data);
+  }
+
   update(id: string, data: Partial<Appointment>): Observable<Appointment> {
     return this.http.put<Appointment>(`${this.api}/${id}`, data);
   }

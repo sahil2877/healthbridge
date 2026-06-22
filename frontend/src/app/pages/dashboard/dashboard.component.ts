@@ -7,6 +7,7 @@ import { Invoice } from '../../models/invoice.model';
 import { Appointment } from '../../models/appointment.model';
 import { Patient } from '../../models/patient.model';
 import { User } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 
 // Provider analytics dashboard — KPIs and dependency-free CSS charts.
 @Component({
@@ -15,44 +16,88 @@ import { User } from '../../models/user.model';
   imports: [CommonModule, RouterLink],
   template: `
     <div class="container">
-      <div class="page-header"><h2>Dashboard</h2></div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>Welcome back, {{ firstName }}</h1>
+          <p>Here's what's happening across your facility today.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <a class="btn btn-primary" routerLink="/patients/new"><i class="fa-solid fa-plus"></i> New Patient</a>
+        </div>
+      </div>
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-      <div class="empty" *ngIf="loading">Loading dashboard...</div>
+      <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading dashboard...</p></div>
 
       <div *ngIf="data">
-        <!-- KPI cards -->
-        <div class="kpi-grid" style="margin-bottom:22px;">
-          <a class="kpi" routerLink="/patients" style="text-decoration:none; color:inherit;">
-            <div class="icon">👥</div><div class="label">Patients</div><div class="value">{{ data.counts.patients }}</div>
+        <!-- Stat cards -->
+        <div class="stat-grid">
+          <a class="stat-card" routerLink="/patients">
+            <div class="stat-card-top">
+              <div class="stat-icon teal"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div class="stat-value">{{ data.counts.patients }}</div>
+            <div class="stat-label">Total Patients</div>
           </a>
-          <a class="kpi" routerLink="/appointments" style="text-decoration:none; color:inherit;">
-            <div class="icon">📅</div><div class="label">Appointments</div><div class="value">{{ data.counts.appointments }}</div>
+          <a class="stat-card" routerLink="/appointments">
+            <div class="stat-card-top">
+              <div class="stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+            <div class="stat-value">{{ data.counts.appointments }}</div>
+            <div class="stat-label">Appointments</div>
           </a>
-          <a class="kpi" routerLink="/prescriptions" style="text-decoration:none; color:inherit;">
-            <div class="icon">💊</div><div class="label">Prescriptions</div><div class="value">{{ data.counts.prescriptions }}</div>
+          <a class="stat-card" routerLink="/prescriptions">
+            <div class="stat-card-top">
+              <div class="stat-icon pink"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+            </div>
+            <div class="stat-value">{{ data.counts.prescriptions }}</div>
+            <div class="stat-label">Prescriptions</div>
           </a>
-          <a class="kpi" routerLink="/records" style="text-decoration:none; color:inherit;">
-            <div class="icon">📋</div><div class="label">Records</div><div class="value">{{ data.counts.records }}</div>
+          <a class="stat-card" routerLink="/records">
+            <div class="stat-card-top">
+              <div class="stat-icon purple"><i class="fa-solid fa-file-medical"></i></div>
+            </div>
+            <div class="stat-value">{{ data.counts.records }}</div>
+            <div class="stat-label">Clinical Records</div>
           </a>
-          <a class="kpi" routerLink="/screening" style="text-decoration:none; color:inherit;">
-            <div class="icon">🩺</div><div class="label">Screenings</div><div class="value">{{ data.counts.screenings }}</div>
+          <a class="stat-card" routerLink="/screening">
+            <div class="stat-card-top">
+              <div class="stat-icon warm"><i class="fa-solid fa-heart-circle-bolt"></i></div>
+            </div>
+            <div class="stat-value">{{ data.counts.screenings }}</div>
+            <div class="stat-label">Screenings</div>
+          </a>
+          <a class="stat-card" routerLink="/invoices">
+            <div class="stat-card-top">
+              <div class="stat-icon success"><i class="fa-solid fa-sack-dollar"></i></div>
+              <span class="stat-trend up"><i class="fa-solid fa-arrow-up"></i></span>
+            </div>
+            <div class="stat-value">₹{{ data.revenue.collected }}</div>
+            <div class="stat-label">Revenue collected</div>
           </a>
         </div>
 
-        <!-- Revenue -->
-        <div class="portal-h">Revenue</div>
-        <div class="kpi-grid" style="margin-bottom:22px;">
-          <div class="kpi"><div class="label">Total billed</div><div class="value">₹{{ data.revenue.billed }}</div></div>
-          <div class="kpi"><div class="label">Collected</div><div class="value" style="color:var(--primary);">₹{{ data.revenue.collected }}</div></div>
-          <div class="kpi"><div class="label">Outstanding</div><div class="value" style="color:var(--danger);">₹{{ data.revenue.outstanding }}</div></div>
-        </div>
-
-        <div class="grid grid-3" style="margin-bottom:22px;">
-          <!-- Appointments by status -->
+        <!-- Revenue summary -->
+        <div class="grid-3">
           <div class="card">
-            <h3 style="margin-top:0;">Appointments by status</h3>
-            <div class="empty" *ngIf="apptKeys.length === 0">No data</div>
+            <div class="card-subtitle">Total billed</div>
+            <div class="stat-value" style="margin-top:6px;">₹{{ data.revenue.billed }}</div>
+          </div>
+          <div class="card">
+            <div class="card-subtitle">Collected</div>
+            <div class="stat-value" style="margin-top:6px;color:var(--primary);">₹{{ data.revenue.collected }}</div>
+          </div>
+          <div class="card">
+            <div class="card-subtitle">Outstanding</div>
+            <div class="stat-value" style="margin-top:6px;color:var(--danger);">₹{{ data.revenue.outstanding }}</div>
+          </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Appointments by status</div></div>
+            <div class="empty-state" *ngIf="apptKeys.length === 0"><p>No data</p></div>
             <div class="bar-row" *ngFor="let k of apptKeys">
               <div class="bl">{{ k }}</div>
               <div class="bar-track"><div class="bar-fill"
@@ -62,10 +107,9 @@ import { User } from '../../models/user.model';
             </div>
           </div>
 
-          <!-- Screening by risk -->
           <div class="card">
-            <h3 style="margin-top:0;">Screening risk levels</h3>
-            <div class="empty" *ngIf="riskKeys.length === 0">No data</div>
+            <div class="card-header"><div class="card-title">Screening risk levels</div></div>
+            <div class="empty-state" *ngIf="riskKeys.length === 0"><p>No data</p></div>
             <div class="bar-row" *ngFor="let k of riskKeys">
               <div class="bl">{{ k }}</div>
               <div class="bar-track"><div class="bar-fill"
@@ -75,10 +119,9 @@ import { User } from '../../models/user.model';
             </div>
           </div>
 
-          <!-- Patients trend -->
           <div class="card">
-            <h3 style="margin-top:0;">New patients / month</h3>
-            <div class="empty" *ngIf="data.patientsTrend.length === 0">No data</div>
+            <div class="card-header"><div class="card-title">New patients / month</div></div>
+            <div class="empty-state" *ngIf="data.patientsTrend.length === 0"><p>No data</p></div>
             <div class="vbars" *ngIf="data.patientsTrend.length > 0">
               <div class="vbar" *ngFor="let t of data.patientsTrend">
                 <div class="vv">{{ t.count }}</div>
@@ -89,24 +132,39 @@ import { User } from '../../models/user.model';
           </div>
         </div>
 
-        <!-- Recent activity -->
-        <div class="grid grid-3">
+        <!-- Recent activity + invoices -->
+        <div class="grid-2">
           <div class="card">
-            <h3 style="margin-top:0;">Recent invoices</h3>
-            <div class="empty" *ngIf="data.recentInvoices.length === 0">None</div>
-            <div *ngFor="let inv of data.recentInvoices"
-                 style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
-              <span>{{ invPatient(inv) }}</span>
-              <span><b>₹{{ inv.total }}</b> <span class="badge">{{ inv.status }}</span></span>
+            <div class="card-header">
+              <div class="card-title">Recent appointments</div>
+              <a class="btn btn-sm btn-ghost" routerLink="/appointments">View all</a>
+            </div>
+            <div class="empty-state" *ngIf="data.recentAppointments.length === 0"><i class="fa-solid fa-calendar"></i><p>No recent appointments</p></div>
+            <div class="timeline" *ngIf="data.recentAppointments.length > 0">
+              <div class="timeline-item" *ngFor="let a of data.recentAppointments">
+                <div class="timeline-dot" style="background:var(--gradient-2)"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="timeline-content">
+                  <p>{{ apptPatient(a) }} → {{ apptDoctor(a) }}</p>
+                  <small>{{ a.date | date:'medium' }}</small>
+                  <span class="timeline-time"><span class="badge" [ngClass]="apptBadge(a.status)">{{ a.status }}</span></span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="card" style="grid-column: span 2;">
-            <h3 style="margin-top:0;">Recent appointments</h3>
-            <div class="empty" *ngIf="data.recentAppointments.length === 0">None</div>
-            <div *ngFor="let a of data.recentAppointments"
-                 style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
-              <span>{{ apptPatient(a) }} → {{ apptDoctor(a) }}</span>
-              <span>{{ a.date | date:'short' }} <span class="badge">{{ a.status }}</span></span>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent invoices</div>
+              <a class="btn btn-sm btn-ghost" routerLink="/invoices">View all</a>
+            </div>
+            <div class="empty-state" *ngIf="data.recentInvoices.length === 0"><i class="fa-solid fa-receipt"></i><p>No invoices yet</p></div>
+            <div class="appt-item" *ngFor="let inv of data.recentInvoices">
+              <div class="stat-icon success" style="width:40px;height:40px;font-size:14px;"><i class="fa-solid fa-receipt"></i></div>
+              <div class="appt-info">
+                <p>{{ invPatient(inv) }}</p>
+                <small>₹{{ inv.total }}</small>
+              </div>
+              <span class="badge" [ngClass]="invBadge(inv.status)">{{ inv.status }}</span>
             </div>
           </div>
         </div>
@@ -119,7 +177,24 @@ export class DashboardComponent implements OnInit {
   loading = false;
   error = '';
 
-  constructor(private analytics: AnalyticsService) {}
+  constructor(private analytics: AnalyticsService, private auth: AuthService) {}
+
+  get firstName(): string {
+    const name = this.auth.currentUser()?.name || 'Doctor';
+    return name.startsWith('Dr') ? name : 'Dr. ' + name.split(' ')[0];
+  }
+
+  apptBadge(status: string | undefined): string {
+    if (status === 'completed') return 'badge-success';
+    if (status === 'cancelled' || status === 'no_show') return 'badge-danger';
+    if (status === 'confirmed') return 'badge-primary';
+    return 'badge-info';
+  }
+  invBadge(status: string | undefined): string {
+    if (status === 'paid') return 'badge-success';
+    if (status === 'overdue') return 'badge-danger';
+    return 'badge-warning';
+  }
 
   ngOnInit(): void {
     this.loading = true;

@@ -12,13 +12,17 @@ import { User } from '../../models/user.model';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="container">
-      <div class="page-header"><h2>Lab Orders</h2></div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>Laboratory Orders</h1>
+          <p>Track lab tests from order to result.</p>
+        </div>
+      </div>
 
       <div class="card">
-        <div class="form-group" style="max-width:220px; margin-bottom:16px;">
-          <label>Filter by status</label>
+        <div class="filter-bar">
           <select class="form-control" [(ngModel)]="status" (ngModelChange)="load()">
-            <option value="">All</option>
+            <option value="">All Status</option>
             <option value="booked">Booked</option>
             <option value="collected">Collected</option>
             <option value="in_lab">In Lab</option>
@@ -28,8 +32,15 @@ import { User } from '../../models/user.model';
         </div>
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-        <div class="empty" *ngIf="loading">Loading...</div>
-        <div class="empty" *ngIf="!loading && orders.length === 0">No orders found.</div>
+
+        <div class="empty-state" *ngIf="loading">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <p>Loading lab orders...</p>
+        </div>
+        <div class="empty-state" *ngIf="!loading && orders.length === 0">
+          <i class="fa-solid fa-flask"></i>
+          <p>No orders found.</p>
+        </div>
 
         <div class="table-wrap" *ngIf="!loading && orders.length > 0">
           <table>
@@ -39,7 +50,15 @@ import { User } from '../../models/user.model';
             <tbody>
               <tr *ngFor="let o of orders">
                 <td><strong>{{ o.orderNumber }}</strong></td>
-                <td>{{ bookedBy(o) }}<div style="color:var(--muted); font-size:0.8rem;">{{ o.contactPhone }}</div></td>
+                <td>
+                  <div class="patient-cell">
+                    <div class="avatar">{{ initials(bookedBy(o)) }}</div>
+                    <div class="patient-cell-info">
+                      <p>{{ bookedBy(o) }}</p>
+                      <small>{{ o.contactPhone }}</small>
+                    </div>
+                  </div>
+                </td>
                 <td>{{ itemNames(o) }}</td>
                 <td>₹{{ o.total }}</td>
                 <td style="font-size:0.82rem;">{{ o.collectionSlot }}</td>
@@ -57,7 +76,7 @@ import { User } from '../../models/user.model';
                   <div style="display:flex; gap:6px;">
                     <input class="form-control" style="padding:4px 8px; width:150px;" [(ngModel)]="o.reportUrl"
                            placeholder="report link" />
-                    <button class="btn btn-ghost btn-sm" (click)="saveReport(o)">Save</button>
+                    <button class="btn btn-ghost btn-sm" (click)="saveReport(o)"><i class="fa-solid fa-floppy-disk"></i> Save</button>
                   </div>
                 </td>
               </tr>
@@ -93,6 +112,11 @@ export class LabOrdersComponent implements OnInit {
   }
   itemNames(o: LabOrder): string {
     return o.items.map((i) => i.name).join(', ');
+  }
+
+  // First two initials for the avatar chip.
+  initials(name: string): string {
+    return (name || '?').trim().split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   }
 
   changeStatus(o: LabOrder, status: string): void {

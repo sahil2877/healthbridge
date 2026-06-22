@@ -14,25 +14,36 @@ import { Patient } from '../../models/patient.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>Billing &amp; Invoices</h2>
-        <a class="btn btn-primary" *ngIf="canWrite()" routerLink="/invoices/new">+ New Invoice</a>
+        <div class="page-title">
+          <h1>Billing &amp; Invoices</h1>
+          <p>Track revenue, manage invoices and process payments.</p>
+        </div>
+        <a class="btn btn-primary" *ngIf="canWrite()" routerLink="/invoices/new"><i class="fa-solid fa-plus"></i> New Invoice</a>
       </div>
 
-      <!-- Summary cards -->
-      <div class="grid grid-3" style="margin-bottom:20px;">
-        <div class="card"><div style="color:var(--muted); font-size:0.85rem;">Total billed</div>
-          <div style="font-size:1.4rem; font-weight:800;">₹{{ totalBilled }}</div></div>
-        <div class="card"><div style="color:var(--muted); font-size:0.85rem;">Collected</div>
-          <div style="font-size:1.4rem; font-weight:800; color:var(--primary);">₹{{ totalCollected }}</div></div>
-        <div class="card"><div style="color:var(--muted); font-size:0.85rem;">Outstanding</div>
-          <div style="font-size:1.4rem; font-weight:800; color:var(--danger);">₹{{ totalBilled - totalCollected }}</div></div>
+      <!-- Summary KPIs -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon success"><i class="fa-solid fa-sack-dollar"></i></div></div>
+          <div class="stat-value">₹{{ totalBilled }}</div>
+          <div class="stat-label">Total Billed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon teal"><i class="fa-solid fa-circle-check"></i></div></div>
+          <div class="stat-value">₹{{ totalCollected }}</div>
+          <div class="stat-label">Collected</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon warm"><i class="fa-solid fa-triangle-exclamation"></i></div></div>
+          <div class="stat-value">₹{{ totalBilled - totalCollected }}</div>
+          <div class="stat-label">Outstanding</div>
+        </div>
       </div>
 
       <div class="card">
-        <div class="form-group" style="max-width:220px; margin-bottom:16px;">
-          <label>Filter by status</label>
+        <div class="filter-bar">
           <select class="form-control" [(ngModel)]="status" (ngModelChange)="load()">
-            <option value="">All</option>
+            <option value="">All Status</option>
             <option value="unpaid">Unpaid</option>
             <option value="partial">Partial</option>
             <option value="paid">Paid</option>
@@ -40,8 +51,15 @@ import { Patient } from '../../models/patient.model';
         </div>
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-        <div class="empty" *ngIf="loading">Loading...</div>
-        <div class="empty" *ngIf="!loading && invoices.length === 0">No invoices found.</div>
+
+        <div class="empty-state" *ngIf="loading">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <p>Loading invoices...</p>
+        </div>
+        <div class="empty-state" *ngIf="!loading && invoices.length === 0">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <p>No invoices found.</p>
+        </div>
 
         <div class="table-wrap" *ngIf="!loading && invoices.length > 0">
           <table>
@@ -55,11 +73,11 @@ import { Patient } from '../../models/patient.model';
                 <td>{{ patientName(inv) }}</td>
                 <td>₹{{ inv.total }}</td>
                 <td>₹{{ inv.amountPaid }}</td>
-                <td><span class="badge" [style.background]="statusBg(inv.status)" [style.color]="'#fff'">{{ inv.status }}</span></td>
+                <td><span class="badge" [ngClass]="statusBadge(inv.status)">{{ inv.status }}</span></td>
                 <td style="text-align:right; white-space:nowrap;">
-                  <a class="btn btn-ghost btn-sm" [routerLink]="['/invoices', inv._id]">View</a>
-                  <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" [routerLink]="['/invoices', inv._id, 'edit']">Edit</a>
-                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="remove(inv)">Delete</button>
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/invoices', inv._id]"><i class="fa-solid fa-eye"></i> View</a>
+                  <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" [routerLink]="['/invoices', inv._id, 'edit']"><i class="fa-solid fa-pen"></i> Edit</a>
+                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="remove(inv)"><i class="fa-solid fa-trash"></i></button>
                 </td>
               </tr>
             </tbody>
@@ -103,6 +121,13 @@ export class InvoiceListComponent implements OnInit {
     if (status === 'paid') return '#0d9488';
     if (status === 'partial') return '#d97706';
     return '#dc2626';
+  }
+
+  // Map invoice status to a design-system badge class.
+  statusBadge(status?: string): string {
+    if (status === 'paid') return 'badge-success';
+    if (status === 'partial') return 'badge-warning';
+    return 'badge-danger';
   }
 
   // Only admin/staff create or edit invoices

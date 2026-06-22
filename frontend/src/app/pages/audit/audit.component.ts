@@ -11,42 +11,56 @@ import { AuditLog } from '../../models/audit.model';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="container">
-      <div class="page-header"><h2>Audit Logs</h2></div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>Audit Logs</h1>
+          <p>System activity tracking and compliance.</p>
+        </div>
+      </div>
 
       <div class="card">
-        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px;">
-          <div class="form-group" style="margin:0; min-width:160px;">
-            <label>Entity</label>
-            <select class="form-control" [(ngModel)]="entity" (ngModelChange)="load()">
-              <option value="">All</option>
-              <option *ngFor="let e of entities" [value]="e">{{ e }}</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin:0; min-width:160px;">
-            <label>Action</label>
-            <select class="form-control" [(ngModel)]="action" (ngModelChange)="load()">
-              <option value="">All</option>
-              <option value="create">Create</option>
-              <option value="update">Update</option>
-              <option value="delete">Delete</option>
-            </select>
-          </div>
+        <div class="filter-bar">
+          <select class="form-control" [(ngModel)]="entity" (ngModelChange)="load()">
+            <option value="">All Entities</option>
+            <option *ngFor="let e of entities" [value]="e">{{ e }}</option>
+          </select>
+          <select class="form-control" [(ngModel)]="action" (ngModelChange)="load()">
+            <option value="">All Actions</option>
+            <option value="create">Create</option>
+            <option value="update">Update</option>
+            <option value="delete">Delete</option>
+          </select>
         </div>
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-        <div class="empty" *ngIf="loading">Loading...</div>
-        <div class="empty" *ngIf="!loading && logs.length === 0">No audit entries found.</div>
+
+        <div class="empty-state" *ngIf="loading">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <p>Loading audit logs...</p>
+        </div>
+        <div class="empty-state" *ngIf="!loading && logs.length === 0">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <p>No audit entries found.</p>
+        </div>
 
         <div class="table-wrap" *ngIf="!loading && logs.length > 0">
           <table>
             <thead>
-              <tr><th>When</th><th>Actor</th><th>Action</th><th>Entity</th><th>Target ID</th><th>Method</th><th>IP</th></tr>
+              <tr><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>Target ID</th><th>Method</th><th>IP Address</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let log of logs">
                 <td>{{ log.at | date:'medium' }}</td>
-                <td>{{ log.actor.name }} <span class="badge">{{ log.actor.role }}</span></td>
-                <td><span class="badge" [style.background]="actionBg(log.action)" [style.color]="'#fff'">{{ log.action }}</span></td>
+                <td>
+                  <div class="patient-cell">
+                    <div class="avatar">{{ initials(log.actor.name) }}</div>
+                    <div class="patient-cell-info">
+                      <p>{{ log.actor.name }}</p>
+                      <small>{{ log.actor.role }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge" [ngClass]="actionBadge(log.action)">{{ log.action }}</span></td>
                 <td>{{ log.entity }}</td>
                 <td style="font-family:monospace; font-size:0.8rem;">{{ log.entityId || '-' }}</td>
                 <td>{{ log.method }} <span style="color:var(--muted);">({{ log.statusCode }})</span></td>
@@ -84,5 +98,17 @@ export class AuditComponent implements OnInit {
     if (action === 'delete') return '#dc2626';
     if (action === 'update') return '#d97706';
     return '#0d9488';
+  }
+
+  // Map an audit action to a design-system badge class.
+  actionBadge(action: string): string {
+    if (action === 'delete') return 'badge-danger';
+    if (action === 'update') return 'badge-warning';
+    return 'badge-success';
+  }
+
+  // First two initials for the actor avatar chip.
+  initials(name: string | undefined): string {
+    return (name || '?').trim().split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   }
 }

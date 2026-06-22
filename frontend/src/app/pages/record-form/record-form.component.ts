@@ -17,17 +17,19 @@ import { User } from '../../models/user.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>{{ isEdit ? 'Edit Record' : 'New Clinical Record' }}</h2>
-        <a class="btn btn-ghost" routerLink="/records">← Back</a>
+        <div class="page-title">
+          <h1>{{ isEdit ? 'Edit Record' : 'New Clinical Record' }}</h1>
+          <p>{{ isEdit ? 'Update the clinical record and manage documents' : 'Capture a new clinical encounter' }}</p>
+        </div>
       </div>
 
       <div class="card" style="margin-bottom:16px;">
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Patient *</label>
+              <label class="form-label">Patient *</label>
               <select class="form-control" formControlName="patient">
                 <option value="">-- Select patient --</option>
                 <option *ngFor="let p of patients" [value]="p._id">{{ p.name }} ({{ p.phone }})</option>
@@ -35,7 +37,7 @@ import { User } from '../../models/user.model';
               <div class="field-error" *ngIf="invalid('patient')">Patient required</div>
             </div>
             <div class="form-group">
-              <label>Doctor *</label>
+              <label class="form-label">Doctor *</label>
               <select class="form-control" formControlName="doctor">
                 <option value="">-- Select doctor --</option>
                 <option *ngFor="let d of doctors" [value]="d.id">{{ d.name }} ({{ d.role }})</option>
@@ -45,24 +47,28 @@ import { User } from '../../models/user.model';
           </div>
 
           <div class="form-group">
-            <label>Diagnosis *</label>
+            <label class="form-label">Diagnosis *</label>
             <input class="form-control" type="text" formControlName="diagnosis" />
             <div class="field-error" *ngIf="invalid('diagnosis')">Diagnosis required</div>
           </div>
 
           <div class="form-group">
-            <label>Prescription</label>
+            <label class="form-label">Prescription</label>
             <textarea class="form-control" rows="2" formControlName="prescription"></textarea>
           </div>
 
           <div class="form-group">
-            <label>Notes</label>
+            <label class="form-label">Notes</label>
             <textarea class="form-control" rows="2" formControlName="notes"></textarea>
           </div>
 
-          <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ loading ? 'Saving...' : (isEdit ? 'Update Record' : 'Create Record') }}
-          </button>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-floppy-disk]="!loading"></i>
+              {{ loading ? 'Saving...' : (isEdit ? 'Update Record' : 'Create Record') }}
+            </button>
+            <a class="btn btn-ghost" routerLink="/records"><i class="fa-solid fa-xmark"></i> Cancel</a>
+          </div>
         </form>
       </div>
 
@@ -75,14 +81,18 @@ import { User } from '../../models/user.model';
             <a [href]="fileUrl(d.url)" target="_blank">{{ d.originalName }}</a>
           </li>
         </ul>
-        <p class="empty" *ngIf="!documents.length" style="padding:10px 0;">No documents uploaded yet.</p>
+        <div class="empty-state" *ngIf="!documents.length">
+          <i class="fa-solid fa-folder-open"></i>
+          <p>No documents uploaded yet.</p>
+        </div>
 
         <div class="alert alert-error" *ngIf="uploadError">{{ uploadError }}</div>
         <div class="form-group">
-          <label>Upload files (pdf / image / doc — max 5, up to 5 MB each)</label>
+          <label class="form-label">Upload files (pdf / image / doc — max 5, up to 5 MB each)</label>
           <input class="form-control" type="file" multiple (change)="onFileChange($event)" />
         </div>
         <button class="btn btn-primary" [disabled]="uploading || selectedFiles.length === 0" (click)="upload()">
+          <i class="fa-solid" [class.fa-spinner]="uploading" [class.fa-spin]="uploading" [class.fa-upload]="!uploading"></i>
           {{ uploading ? 'Uploading...' : 'Upload' }}
         </button>
       </div>

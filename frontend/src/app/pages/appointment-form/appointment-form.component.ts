@@ -17,17 +17,19 @@ import { User } from '../../models/user.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>{{ isEdit ? 'Edit Appointment' : 'Book Appointment' }}</h2>
-        <a class="btn btn-ghost" routerLink="/appointments">← Back</a>
+        <div class="page-title">
+          <h1>{{ isEdit ? 'Edit Appointment' : 'Book Appointment' }}</h1>
+          <p>{{ isEdit ? 'Update appointment details' : 'Schedule a new appointment for a patient' }}</p>
+        </div>
       </div>
 
       <div class="card">
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Patient *</label>
+              <label class="form-label">Patient *</label>
               <select class="form-control" formControlName="patient">
                 <option value="">-- Select patient --</option>
                 <option *ngFor="let p of patients" [value]="p._id">{{ p.name }} ({{ p.phone }})</option>
@@ -35,7 +37,7 @@ import { User } from '../../models/user.model';
               <div class="field-error" *ngIf="invalid('patient')">Patient required</div>
             </div>
             <div class="form-group">
-              <label>Doctor *</label>
+              <label class="form-label">Doctor *</label>
               <select class="form-control" formControlName="doctor">
                 <option value="">-- Select doctor --</option>
                 <option *ngFor="let d of doctors" [value]="d.id">{{ d.name }} ({{ d.role }})</option>
@@ -44,14 +46,14 @@ import { User } from '../../models/user.model';
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Date &amp; Time *</label>
+              <label class="form-label">Date &amp; Time *</label>
               <input class="form-control" type="datetime-local" formControlName="date" />
               <div class="field-error" *ngIf="invalid('date')">Date required</div>
             </div>
             <div class="form-group" *ngIf="isEdit">
-              <label>Status</label>
+              <label class="form-label">Status</label>
               <select class="form-control" formControlName="status">
                 <option value="scheduled">Scheduled</option>
                 <option value="completed">Completed</option>
@@ -61,19 +63,23 @@ import { User } from '../../models/user.model';
           </div>
 
           <div class="form-group">
-            <label>Reason *</label>
+            <label class="form-label">Reason *</label>
             <input class="form-control" type="text" formControlName="reason" placeholder="e.g. Fever checkup" />
             <div class="field-error" *ngIf="invalid('reason')">Reason required</div>
           </div>
 
           <div class="form-group">
-            <label>Notes</label>
+            <label class="form-label">Notes</label>
             <textarea class="form-control" rows="2" formControlName="notes"></textarea>
           </div>
 
-          <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ loading ? 'Saving...' : (isEdit ? 'Update Appointment' : 'Book Appointment') }}
-          </button>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-floppy-disk]="!loading"></i>
+              {{ loading ? 'Saving...' : (isEdit ? 'Update Appointment' : 'Book Appointment') }}
+            </button>
+            <a class="btn btn-ghost" routerLink="/appointments"><i class="fa-solid fa-xmark"></i> Cancel</a>
+          </div>
         </form>
       </div>
     </div>

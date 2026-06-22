@@ -10,7 +10,7 @@ export interface Appointment {
   date: string;            // ISO date-time
   reason: string;
   notes?: string;
-  status?: 'scheduled' | 'completed' | 'cancelled';
+  status?: 'requested' | 'scheduled' | 'completed' | 'cancelled';
   bookedBy?: string;
   createdAt?: string;
   updatedAt?: string;

@@ -5,12 +5,14 @@
   const auth = require('../middleware/auth');
   const role = require('../middleware/role');
   const upload = require('../middleware/upload');
+  const { getOrCreateSelfPatient } = require('../utils/selfPatient');
 
   router.use(auth); // all routes require login
-  router.use(role('admin', 'doctor', 'staff')); // provider-only area
+  // Reads are role-scoped per handler (patients see only their own records);
+  // mutating routes are individually guarded for providers.
 
   // @route  POST /api/records  -> create a new clinical record (text data only)
-  router.post('/', async (req, res) => {
+  router.post('/', role('admin', 'doctor', 'staff'), async (req, res) => {
     try {
       const record = await Record.create({ ...req.body, createdBy: req.user.id });
       res.status(201).json(record);
@@ -19,11 +21,16 @@
     }
   });
 
-  // @route  GET /api/records  -> all records (optionally filter by ?patient=<id>)
+  // @route  GET /api/records  -> records (optionally filter by ?patient=<id>)
+  // Patients are scoped to their own record regardless of the query.
   router.get('/', async (req, res) => {
     try {
       const { patient } = req.query;
-      const filter = patient ? { patient } : {};
+      let filter = patient ? { patient } : {};
+      if (req.user.role === 'patient') {
+        const self = await getOrCreateSelfPatient(req.user);
+        filter = { patient: self._id };
+      }
       const records = await Record.find(filter)
         .populate('patient', 'name phone age gender')
         .populate('doctor', 'name role')
@@ -41,6 +48,12 @@
         .populate('patient', 'name phone age gender')
         .populate('doctor', 'name role');
       if (!record) return res.status(404).json({ message: 'Record not found' });
+
+      if (req.user.role === 'patient') {
+        const self = await getOrCreateSelfPatient(req.user);
+        const owner = record.patient?._id || record.patient;
+        if (String(owner) !== String(self._id)) return res.status(403).json({ message: 'Access denied' });
+      }
       res.json(record);
     } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
@@ -48,7 +61,7 @@
   });
 
   // @route  PUT /api/records/:id  -> update the record text
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', role('admin', 'doctor', 'staff'), async (req, res) => {
     try {
       const record = await Record.findByIdAndUpdate(req.params.id, req.body, { new: true });
       if (!record) return res.status(404).json({ message: 'Record not found' });
@@ -71,7 +84,7 @@
 
   // @route  POST /api/records/:id/documents  -> upload file(s) to a record
   // The form-data field must be named "files" (max 5 files)
-  router.post('/:id/documents', upload.array('files', 5), async (req, res) => {
+  router.post('/:id/documents', role('admin', 'doctor', 'staff'), upload.array('files', 5), async (req, res) => {
     try {
       const record = await Record.findById(req.params.id);
       if (!record) return res.status(404).json({ message: 'Record not found' });

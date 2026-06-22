@@ -3,10 +3,23 @@ const router = express.Router();
 const Patient = require('../models/Patient');
 const auth = require('../middleware/auth');
 const role = require('../middleware/role');
+const { getOrCreateSelfPatient } = require('../utils/selfPatient');
 
 // router.use(auth) -> all routes in this file require login
 router.use(auth);
-// Provider-only area: patients (consumer role) cannot access these endpoints
+
+// @route  GET /api/patients/me  -> the logged-in patient's own clinical record
+// Accessible to patients (declared before the provider-only guard below).
+router.get('/me', async (req, res) => {
+  try {
+    const patient = await getOrCreateSelfPatient(req.user);
+    res.json(patient);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Provider-only area: patients (consumer role) cannot access the endpoints below
 router.use(role('admin', 'doctor', 'staff'));
 
 // @route  POST /api/patients  -> patient onboarding

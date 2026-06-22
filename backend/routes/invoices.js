@@ -3,9 +3,11 @@ const router = express.Router();
 const Invoice = require('../models/Invoice');
 const auth = require('../middleware/auth');
 const role = require('../middleware/role');
+const { getOrCreateSelfPatient } = require('../utils/selfPatient');
 
 router.use(auth); // all routes require login
-router.use(role('admin', 'doctor', 'staff')); // provider-only area
+// Reads are role-scoped per handler (patients see only their own invoices);
+// create/update/payments/delete are individually guarded for providers.
 
 // Recompute money fields from items, payments, tax and discount
 function recalc(invoice) {
@@ -35,13 +37,18 @@ router.post('/', role('admin', 'staff'), async (req, res) => {
   }
 });
 
-// @route  GET /api/invoices  -> all invoices (optional ?patient= & ?status=)
+// @route  GET /api/invoices  -> invoices (optional ?patient= & ?status=)
+// Patients are scoped to their own invoices regardless of the query.
 router.get('/', async (req, res) => {
   try {
     const { patient, status } = req.query;
     const filter = {};
     if (patient) filter.patient = patient;
     if (status) filter.status = status;
+    if (req.user.role === 'patient') {
+      const self = await getOrCreateSelfPatient(req.user);
+      filter.patient = self._id;
+    }
     const invoices = await Invoice.find(filter)
       .populate('patient', 'name phone age gender')
       .sort({ createdAt: -1 });
@@ -57,6 +64,12 @@ router.get('/:id', async (req, res) => {
     const invoice = await Invoice.findById(req.params.id)
       .populate('patient', 'name phone age gender bloodGroup address');
     if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
+
+    if (req.user.role === 'patient') {
+      const self = await getOrCreateSelfPatient(req.user);
+      const owner = invoice.patient?._id || invoice.patient;
+      if (String(owner) !== String(self._id)) return res.status(403).json({ message: 'Access denied' });
+    }
     res.json(invoice);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

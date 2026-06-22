@@ -3,7 +3,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'doctor' | 'staff';
+  role: 'admin' | 'doctor' | 'staff' | 'patient';
 }
 
 // login/register response -> token + user

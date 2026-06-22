@@ -15,12 +15,21 @@ import { User } from '../../models/user.model';
     <div class="container">
       <!-- Toolbar is hidden when printing (see .no-print) -->
       <div class="page-header no-print">
-        <a class="btn btn-ghost" routerLink="/prescriptions">← Back</a>
-        <button class="btn btn-primary" (click)="print()" [disabled]="!rx">🖨 Print / Save PDF</button>
+        <div class="page-title">
+          <h1>Prescription</h1>
+          <p>Printable prescription sheet</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn btn-ghost" routerLink="/prescriptions"><i class="fa-solid fa-arrow-left"></i> Back</a>
+          <button class="btn btn-primary" (click)="print()" [disabled]="!rx"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+        </div>
       </div>
 
       <div class="alert alert-error no-print" *ngIf="error">{{ error }}</div>
-      <div class="empty no-print" *ngIf="loading">Loading...</div>
+      <div class="empty-state no-print" *ngIf="loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading...</p>
+      </div>
 
       <div class="card rx-sheet" *ngIf="rx">
         <!-- Letterhead -->

@@ -3,9 +3,11 @@ const router = express.Router();
 const Prescription = require('../models/Prescription');
 const auth = require('../middleware/auth');
 const role = require('../middleware/role');
+const { getOrCreateSelfPatient } = require('../utils/selfPatient');
 
 router.use(auth); // all routes require login
-router.use(role('admin', 'doctor', 'staff')); // provider-only area
+// Reads below are role-scoped per handler (patients see only their own);
+// mutating routes are individually guarded with role('admin', 'doctor').
 
 // @route  POST /api/prescriptions  -> create a prescription (admin or doctor)
 router.post('/', role('admin', 'doctor'), async (req, res) => {
@@ -20,11 +22,16 @@ router.post('/', role('admin', 'doctor'), async (req, res) => {
   }
 });
 
-// @route  GET /api/prescriptions  -> all prescriptions (optionally filter by ?patient=<id>)
+// @route  GET /api/prescriptions  -> prescriptions (optionally filter by ?patient=<id>)
+// Patients are scoped to their own record regardless of the query.
 router.get('/', async (req, res) => {
   try {
     const { patient } = req.query;
-    const filter = patient ? { patient } : {};
+    let filter = patient ? { patient } : {};
+    if (req.user.role === 'patient') {
+      const self = await getOrCreateSelfPatient(req.user);
+      filter = { patient: self._id };
+    }
     const prescriptions = await Prescription.find(filter)
       .populate('patient', 'name phone age gender')
       .populate('doctor', 'name role')
@@ -42,6 +49,12 @@ router.get('/:id', async (req, res) => {
       .populate('patient', 'name phone age gender bloodGroup')
       .populate('doctor', 'name role email');
     if (!prescription) return res.status(404).json({ message: 'Prescription not found' });
+
+    if (req.user.role === 'patient') {
+      const self = await getOrCreateSelfPatient(req.user);
+      const owner = prescription.patient?._id || prescription.patient;
+      if (String(owner) !== String(self._id)) return res.status(403).json({ message: 'Access denied' });
+    }
     res.json(prescription);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

@@ -15,12 +15,21 @@ import { Patient } from '../../models/patient.model';
   template: `
     <div class="container">
       <div class="page-header no-print">
-        <a class="btn btn-ghost" routerLink="/invoices">← Back</a>
-        <button class="btn btn-primary" (click)="print()" [disabled]="!inv">🖨 Print / Save PDF</button>
+        <div class="page-title">
+          <h1>Invoice</h1>
+          <p>Printable tax invoice</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn btn-ghost" routerLink="/invoices"><i class="fa-solid fa-arrow-left"></i> Back</a>
+          <button class="btn btn-primary" (click)="print()" [disabled]="!inv"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+        </div>
       </div>
 
       <div class="alert alert-error no-print" *ngIf="error">{{ error }}</div>
-      <div class="empty no-print" *ngIf="loading">Loading...</div>
+      <div class="empty-state no-print" *ngIf="loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading...</p>
+      </div>
 
       <div class="card rx-sheet" *ngIf="inv">
         <div class="rx-head">
@@ -86,13 +95,13 @@ import { Patient } from '../../models/patient.model';
       <div class="card no-print" *ngIf="inv && inv.status !== 'paid' && canPay()" style="margin-top:16px; max-width:480px;">
         <h3 style="margin-top:0;">Record Payment</h3>
         <div class="alert alert-error" *ngIf="payError">{{ payError }}</div>
-        <div class="form-row">
+        <div class="form-grid">
           <div class="form-group">
-            <label>Amount (₹)</label>
+            <label class="form-label">Amount (₹)</label>
             <input class="form-control" type="number" [(ngModel)]="payAmount" [placeholder]="balance" />
           </div>
           <div class="form-group">
-            <label>Method</label>
+            <label class="form-label">Method</label>
             <select class="form-control" [(ngModel)]="payMethod">
               <option value="cash">Cash</option>
               <option value="card">Card</option>
@@ -102,10 +111,11 @@ import { Patient } from '../../models/patient.model';
           </div>
         </div>
         <div class="form-group">
-          <label>Reference (optional)</label>
+          <label class="form-label">Reference (optional)</label>
           <input class="form-control" type="text" [(ngModel)]="payRef" placeholder="Txn ID / note" />
         </div>
         <button class="btn btn-primary" [disabled]="paying" (click)="recordPayment()">
+          <i class="fa-solid" [class.fa-spinner]="paying" [class.fa-spin]="paying" [class.fa-money-bill-wave]="!paying"></i>
           {{ paying ? 'Saving...' : 'Record Payment' }}
         </button>
       </div>

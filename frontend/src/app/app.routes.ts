@@ -28,8 +28,11 @@ import { ClaimFormComponent } from './pages/insurance/claim-form.component';
 import { PortalLayoutComponent } from './pages/portal/portal-layout.component';
 import { PortalHomeComponent } from './pages/portal/portal-home.component';
 import { PortalCareComponent } from './pages/portal/portal-care.component';
+import { PortalBookComponent } from './pages/portal/portal-book.component';
 import { PortalOrdersComponent } from './pages/portal/portal-orders.component';
 import { PortalConsultComponent } from './pages/portal/portal-consult.component';
+import { PortalAppointmentsComponent } from './pages/portal/portal-appointments.component';
+import { PortalRecordsComponent } from './pages/portal/portal-records.component';
 import { PortalVitalsComponent } from './pages/portal/portal-vitals.component';
 import { PortalProfileComponent } from './pages/portal/portal-profile.component';
 
@@ -50,8 +53,11 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: PortalHomeComponent },
       { path: 'care', component: PortalCareComponent },
+      { path: 'book', component: PortalBookComponent },
       { path: 'orders', component: PortalOrdersComponent },
+      { path: 'appointments', component: PortalAppointmentsComponent },
       { path: 'consult', component: PortalConsultComponent },
+      { path: 'records', component: PortalRecordsComponent },
       { path: 'vitals', component: PortalVitalsComponent },
       { path: 'profile', component: PortalProfileComponent }
     ]

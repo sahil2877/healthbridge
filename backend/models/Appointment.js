@@ -13,8 +13,10 @@
     reason:  { type: String, required: true }, // reason for the visit (e.g. "Fever checkup")
     notes:   { type: String },                 // extra notes from the doctor
 
-    // appointment state
-    status:  { type: String, enum: ['scheduled', 'completed', 'cancelled'], default: 'scheduled' },
+    // appointment state.
+    // 'requested' = a patient asked for this slot and is waiting for the clinic
+    // to confirm; providers move it to 'scheduled' (confirm) or 'cancelled' (decline).
+    status:  { type: String, enum: ['requested', 'scheduled', 'completed', 'cancelled'], default: 'scheduled' },
 
     // Who booked it (the logged-in user)
     bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }

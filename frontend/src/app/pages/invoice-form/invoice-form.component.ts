@@ -15,8 +15,10 @@ import { Patient } from '../../models/patient.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>{{ isEdit ? 'Edit Invoice' : 'New Invoice' }}</h2>
-        <a class="btn btn-ghost" routerLink="/invoices">← Back</a>
+        <div class="page-title">
+          <h1>{{ isEdit ? 'Edit Invoice' : 'New Invoice' }}</h1>
+          <p>{{ isEdit ? 'Update invoice line items and totals' : 'Generate a new billing invoice' }}</p>
+        </div>
       </div>
 
       <div class="card">
@@ -24,7 +26,7 @@ import { Patient } from '../../models/patient.model';
 
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="form-group" style="max-width:360px;">
-            <label>Patient *</label>
+            <label class="form-label">Patient *</label>
             <select class="form-control" formControlName="patient">
               <option value="">-- Select patient --</option>
               <option *ngFor="let p of patients" [value]="p._id">{{ p.name }} ({{ p.phone }})</option>
@@ -33,39 +35,41 @@ import { Patient } from '../../models/patient.model';
           </div>
 
           <!-- Line items -->
-          <label style="font-weight:600; display:block; margin:14px 0 8px;">Items *</label>
+          <label class="form-label" style="margin:14px 0 8px;">Items *</label>
           <div formArrayName="items">
             <div class="form-row" *ngFor="let item of items.controls; let i = index" [formGroupName]="i"
                  style="align-items:end; grid-template-columns: 2fr 0.7fr 1fr 1fr auto; gap:10px;">
               <div class="form-group" style="margin:0;">
-                <label *ngIf="i===0">Description</label>
+                <label class="form-label" *ngIf="i===0">Description</label>
                 <input class="form-control" type="text" formControlName="description" placeholder="e.g. Consultation fee" />
               </div>
               <div class="form-group" style="margin:0;">
-                <label *ngIf="i===0">Qty</label>
+                <label class="form-label" *ngIf="i===0">Qty</label>
                 <input class="form-control" type="number" formControlName="qty" />
               </div>
               <div class="form-group" style="margin:0;">
-                <label *ngIf="i===0">Unit ₹</label>
+                <label class="form-label" *ngIf="i===0">Unit ₹</label>
                 <input class="form-control" type="number" formControlName="unitPrice" />
               </div>
               <div class="form-group" style="margin:0;">
-                <label *ngIf="i===0">Amount</label>
+                <label class="form-label" *ngIf="i===0">Amount</label>
                 <input class="form-control" type="text" [value]="'₹' + lineAmount(i)" disabled />
               </div>
-              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)"
-                      [disabled]="items.length === 1" style="margin-bottom:0;">✕</button>
+              <button type="button" class="remove-med" (click)="removeItem(i)"
+                      [disabled]="items.length === 1" title="Remove item">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
             </div>
           </div>
           <button type="button" class="btn btn-ghost btn-sm" (click)="addItem()" style="margin:8px 0 16px;">
-            + Add item
+            <i class="fa-solid fa-plus"></i> Add item
           </button>
 
           <!-- Tax / discount -->
-          <div class="form-row" style="max-width:420px;">
-            <div class="form-group"><label>Tax (₹)</label>
+          <div class="form-grid" style="max-width:420px;">
+            <div class="form-group"><label class="form-label">Tax (₹)</label>
               <input class="form-control" type="number" formControlName="tax" /></div>
-            <div class="form-group"><label>Discount (₹)</label>
+            <div class="form-group"><label class="form-label">Discount (₹)</label>
               <input class="form-control" type="number" formControlName="discount" /></div>
           </div>
 
@@ -79,13 +83,17 @@ import { Patient } from '../../models/patient.model';
           </div>
 
           <div class="form-group">
-            <label>Notes</label>
+            <label class="form-label">Notes</label>
             <textarea class="form-control" rows="2" formControlName="notes"></textarea>
           </div>
 
-          <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ loading ? 'Saving...' : (isEdit ? 'Update Invoice' : 'Create Invoice') }}
-          </button>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-floppy-disk]="!loading"></i>
+              {{ loading ? 'Saving...' : (isEdit ? 'Update Invoice' : 'Create Invoice') }}
+            </button>
+            <a class="btn btn-ghost" routerLink="/invoices"><i class="fa-solid fa-xmark"></i> Cancel</a>
+          </div>
         </form>
       </div>
     </div>

@@ -15,15 +15,22 @@ import { User } from '../../models/user.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>Appointments</h2>
-        <a class="btn btn-primary" routerLink="/appointments/new">+ Book Appointment</a>
+        <div class="page-title">
+          <h1>Appointments</h1>
+          <p>Schedule and manage patient appointments.</p>
+        </div>
+        <a class="btn btn-primary" routerLink="/appointments/new"><i class="fa-solid fa-plus"></i> Book Appointment</a>
       </div>
 
       <div class="card">
-        <div class="form-group" style="max-width:240px; margin-bottom:16px;">
-          <label>Filter by status</label>
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search appointments..." [(ngModel)]="search" />
+          </div>
           <select class="form-control" [(ngModel)]="status" (ngModelChange)="load()">
-            <option value="">All</option>
+            <option value="">All Status</option>
+            <option value="requested">Requested</option>
             <option value="scheduled">Scheduled</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
@@ -31,40 +38,51 @@ import { User } from '../../models/user.model';
         </div>
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-        <div class="empty" *ngIf="loading">Loading...</div>
-        <div class="empty" *ngIf="!loading && appointments.length === 0">
-          No appointments found. Click <strong>Book Appointment</strong> to add one.
+
+        <div class="empty-state" *ngIf="loading">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <p>Loading appointments...</p>
         </div>
 
-        <div class="table-wrap" *ngIf="!loading && appointments.length > 0">
+        <div class="empty-state" *ngIf="!loading && filtered().length === 0">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          <p>No appointments found. Click <strong>Book Appointment</strong> to add one.</p>
+        </div>
+
+        <div class="table-wrap" *ngIf="!loading && filtered().length > 0">
           <table>
             <thead>
               <tr>
-                <th>Date &amp; Time</th>
                 <th>Patient</th>
                 <th>Doctor</th>
+                <th>Date &amp; Time</th>
                 <th>Reason</th>
                 <th>Status</th>
                 <th style="text-align:right;">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let a of appointments">
-                <td>{{ a.date | date:'medium' }}</td>
-                <td><strong>{{ patientName(a) }}</strong></td>
-                <td>{{ doctorName(a) }}</td>
-                <td>{{ a.reason }}</td>
+              <tr *ngFor="let a of filtered()">
                 <td>
-                  <select class="form-control" style="padding:4px 8px; width:auto;"
-                          [ngModel]="a.status" (ngModelChange)="changeStatus(a, $event)">
-                    <option value="scheduled">Scheduled</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
+                  <div class="patient-cell">
+                    <div class="avatar" [style.background]="avatarBg(patientName(a))">{{ initials(patientName(a)) }}</div>
+                    <div class="patient-cell-info">
+                      <p>{{ patientName(a) }}</p>
+                      <small *ngIf="a.status === 'requested'">New request</small>
+                    </div>
+                  </div>
                 </td>
+                <td>{{ doctorName(a) }}</td>
+                <td>{{ a.date | date:'medium' }}</td>
+                <td>{{ a.reason }}</td>
+                <td><span class="badge" [ngClass]="badgeClass(a.status)">{{ a.status }}</span></td>
                 <td style="text-align:right; white-space:nowrap;">
-                  <a class="btn btn-ghost btn-sm" [routerLink]="['/appointments', a._id, 'edit']">Edit</a>
-                  <button class="btn btn-danger btn-sm" *ngIf="canDelete()" (click)="remove(a)">Delete</button>
+                  <ng-container *ngIf="a.status === 'requested'">
+                    <button class="btn btn-primary btn-sm" (click)="changeStatus(a, 'scheduled')"><i class="fa-solid fa-check"></i> Confirm</button>
+                    <button class="btn btn-ghost btn-sm" (click)="changeStatus(a, 'cancelled')"><i class="fa-solid fa-xmark"></i> Decline</button>
+                  </ng-container>
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/appointments', a._id, 'edit']"><i class="fa-solid fa-pen"></i> Edit</a>
+                  <button class="btn btn-danger btn-sm" *ngIf="canDelete()" (click)="remove(a)"><i class="fa-solid fa-trash"></i></button>
                 </td>
               </tr>
             </tbody>
@@ -79,8 +97,45 @@ export class AppointmentListComponent implements OnInit {
   loading = false;
   error = '';
   status = '';
+  search = '';
 
   constructor(private appointmentService: AppointmentService, public auth: AuthService) {}
+
+  // --- view helpers ---
+  filtered(): Appointment[] {
+    const q = this.search.trim().toLowerCase();
+    if (!q) return this.appointments;
+    return this.appointments.filter((a) =>
+      (this.patientName(a) || '').toLowerCase().includes(q) ||
+      (this.doctorName(a) || '').toLowerCase().includes(q) ||
+      (a.reason || '').toLowerCase().includes(q)
+    );
+  }
+
+  initials(name: string): string {
+    if (!name) return '?';
+    return name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+  }
+
+  avatarBg(name: string): string {
+    const grads = ['var(--gradient-1)', 'var(--gradient-2)', 'var(--gradient-purple)', 'var(--gradient-warm)', 'var(--gradient-success)'];
+    let sum = 0;
+    for (let i = 0; i < (name || '').length; i++) sum += name.charCodeAt(i);
+    return grads[sum % grads.length];
+  }
+
+  badgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'completed': return 'badge-success';
+      case 'cancelled':
+      case 'no_show': return 'badge-danger';
+      case 'confirmed': return 'badge-primary';
+      case 'requested': return 'badge-warning';
+      case 'scheduled':
+      case 'pending':
+      default: return 'badge-info';
+    }
+  }
 
   ngOnInit(): void {
     this.load();

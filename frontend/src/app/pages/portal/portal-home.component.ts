@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HealthScoreService, HealthScore } from '../../services/health-score.service';
 import {
   SERVICE_TILES, CARE_PLANS, LAB_PACKAGES, ORGAN_TESTS, CHECKUP_JOURNEY
 } from '../../data/catalog';
@@ -13,47 +14,42 @@ import {
   imports: [CommonModule, RouterLink],
   template: `
     <div class="container">
-      <!-- Greeting / hero -->
-      <div class="portal-hero">
-        <div>
-          <div class="hi">Hi, {{ firstName }} 👋</div>
-          <div class="loc">📍 Anand, Gujarat</div>
+      <!-- Welcome hero -->
+      <div class="welcome-hero">
+        <div class="welcome-content">
+          <h1>Hi, {{ firstName }} 👋</h1>
+          <p>Welcome back to HealthBridge. Book tests, consult doctors, and track your health — all in one place.</p>
+          <div class="welcome-hero-actions">
+            <a class="btn btn-primary" routerLink="/portal/care"><i class="fa-solid fa-flask-vial"></i> Book a Test</a>
+            <a class="btn" routerLink="/portal/consult"><i class="fa-solid fa-video"></i> Consult a Doctor</a>
+          </div>
         </div>
-        <div class="wallet">👛 Wallet ₹1,000</div>
-      </div>
-
-      <!-- Search -->
-      <div class="portal-search">
-        <span>🔍</span>
-        <input type="text" placeholder="Search for tests, packages, doctors..." />
-      </div>
-
-      <!-- Cashback banner -->
-      <div class="promo">
-        <div><span class="big">₹300 Cashback</span><div>in wallet on your first booking</div></div>
-        <a class="btn" style="background:#fff; color:var(--primary-dark);" routerLink="/portal/care">Book now</a>
       </div>
 
       <!-- Service tiles -->
       <div class="portal-h">What are you looking for?</div>
-      <div class="grid grid-3">
-        <div class="tile" *ngFor="let t of tiles">
-          <div class="emoji">{{ t.icon }}</div>
-          <div class="t">{{ t.title }}</div>
-          <div class="o">{{ t.offer }}</div>
-        </div>
+      <div class="stat-grid">
+        <a class="stat-card" *ngFor="let t of tiles" routerLink="/portal/care" style="text-align:left;">
+          <div class="stat-card-top">
+            <div class="stat-icon teal" style="font-size:22px;">{{ t.icon }}</div>
+          </div>
+          <div class="card-title">{{ t.title }}</div>
+          <div class="stat-label" style="color:var(--primary);">{{ t.offer }}</div>
+        </a>
       </div>
 
       <!-- Health score -->
       <div class="portal-h">Your HealthScore</div>
       <div class="score-card">
-        <div class="score-ring"><span>72</span></div>
+        <div class="score-ring" [style.background]="ringStyle">
+          <span>{{ score.score !== null ? score.score : '—' }}</span>
+        </div>
         <div style="flex:1; min-width:200px;">
-          <div style="font-weight:700;">Good — but room to improve</div>
+          <div style="font-weight:700;">{{ score.score !== null ? score.label : 'Set up your HealthScore' }}</div>
           <div style="color:var(--muted); font-size:0.9rem; margin:4px 0 10px;">
-            Your score is based on vitals, lifestyle and screening data.
+            {{ score.message }}
           </div>
-          <a class="btn btn-primary btn-sm" routerLink="/portal/vitals">View details</a>
+          <a class="btn btn-primary btn-sm" routerLink="/portal/vitals"><i class="fa-solid fa-heart-pulse"></i> View details</a>
         </div>
       </div>
 
@@ -77,7 +73,8 @@ import {
             <span class="price">₹{{ p.price }}</span>
             <span class="mrp">₹{{ p.mrp }}</span>
           </div>
-          <a class="btn btn-primary btn-sm btn-block" routerLink="/portal/care">Book Now</a>
+          <a class="btn btn-primary btn-sm btn-block" routerLink="/portal/book"
+             [queryParams]="{ pkg: p.name, price: p.price }">Book Now</a>
         </div>
       </div>
 
@@ -88,7 +85,8 @@ import {
           <div style="font-size:1.8rem;">{{ o.emoji }}</div>
           <div class="name">{{ o.organ }}<div style="font-weight:400; color:var(--muted); font-size:0.82rem;">{{ o.desc }}</div></div>
           <div><span class="price">₹{{ o.price }}</span><span class="mrp">₹{{ o.mrp }}</span></div>
-          <a class="btn btn-primary btn-sm btn-block" routerLink="/portal/care">Book Now</a>
+          <a class="btn btn-primary btn-sm btn-block" routerLink="/portal/book"
+             [queryParams]="{ pkg: o.organ + ' Health Checkup', price: o.price }">Book Now</a>
         </div>
       </div>
 
@@ -108,17 +106,29 @@ import {
     </div>
   `
 })
-export class PortalHomeComponent {
+export class PortalHomeComponent implements OnInit {
   tiles = SERVICE_TILES;
   carePlans = CARE_PLANS;
   popular = LAB_PACKAGES.filter((p) => p.category === 'Popular' || p.category === 'Vitamins').slice(0, 4);
   organs = ORGAN_TESTS;
   journey = CHECKUP_JOURNEY;
 
-  constructor(private auth: AuthService) {}
+  score: HealthScore = { score: null, label: '', message: '', factors: [] };
+
+  constructor(private auth: AuthService, private health: HealthScoreService) {}
+
+  ngOnInit(): void {
+    this.score = this.health.compute();
+  }
 
   get firstName(): string {
     const name = this.auth.currentUser()?.name || 'there';
     return name.split(' ')[0];
+  }
+
+  // Fill the score ring proportionally (empty when no score yet).
+  get ringStyle(): string {
+    const pct = this.score.score ?? 0;
+    return `conic-gradient(var(--primary) 0 ${pct}%, #e2e8f0 ${pct}% 100%)`;
   }
 }

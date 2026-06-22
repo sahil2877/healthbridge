@@ -14,34 +14,41 @@ import { Patient } from '../../models/patient.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>Patients</h2>
-        <a class="btn btn-primary" routerLink="/patients/new">+ Onboard Patient</a>
+        <div class="page-title">
+          <h1>Patients</h1>
+          <p>Manage your patient directory and records.</p>
+        </div>
+        <a class="btn btn-primary" routerLink="/patients/new"><i class="fa-solid fa-user-plus"></i> Onboard Patient</a>
       </div>
 
       <div class="card">
-        <div class="form-group" style="margin-bottom:16px;">
-          <input
-            class="form-control"
-            type="text"
-            placeholder="Search by name or phone..."
-            [(ngModel)]="search"
-            (ngModelChange)="search$.next($event)"
-          />
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              class="form-control"
+              type="text"
+              placeholder="Search by name or phone..."
+              [(ngModel)]="search"
+              (ngModelChange)="search$.next($event)"
+            />
+          </div>
         </div>
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-        <div class="empty" *ngIf="!loading && patients.length === 0">
-          No patients found. Click <strong>Onboard Patient</strong> to add one.
+        <div class="empty-state" *ngIf="!loading && patients.length === 0">
+          <i class="fa-solid fa-user-injured"></i>
+          <p>No patients found. Click <strong>Onboard Patient</strong> to add one.</p>
         </div>
 
-        <div class="empty" *ngIf="loading">Loading...</div>
+        <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div>
 
         <div class="table-wrap" *ngIf="!loading && patients.length > 0">
           <table>
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Patient</th>
                 <th>Age</th>
                 <th>Gender</th>
                 <th>Phone</th>
@@ -51,14 +58,22 @@ import { Patient } from '../../models/patient.model';
             </thead>
             <tbody>
               <tr *ngFor="let p of patients">
-                <td><strong>{{ p.name }}</strong></td>
+                <td>
+                  <div class="patient-cell">
+                    <div class="avatar" [style.background]="avatarBg(p.name)">{{ initials(p.name) }}</div>
+                    <div class="patient-cell-info">
+                      <p>{{ p.name }}</p>
+                      <small>{{ p.email || p.phone }}</small>
+                    </div>
+                  </div>
+                </td>
                 <td>{{ p.age }}</td>
                 <td>{{ p.gender }}</td>
                 <td>{{ p.phone }}</td>
-                <td><span class="badge">{{ p.bloodGroup }}</span></td>
+                <td><span class="badge badge-danger">{{ p.bloodGroup }}</span></td>
                 <td style="text-align:right; white-space:nowrap;">
-                  <a class="btn btn-ghost btn-sm" [routerLink]="['/patients', p._id, 'edit']">Edit</a>
-                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="remove(p)">Delete</button>
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/patients', p._id, 'edit']"><i class="fa-solid fa-pen"></i></a>
+                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="remove(p)"><i class="fa-solid fa-trash"></i></button>
                 </td>
               </tr>
             </tbody>
@@ -76,6 +91,16 @@ export class PatientListComponent implements OnInit {
   search$ = new Subject<string>();
 
   constructor(private patientService: PatientService, public auth: AuthService) {}
+
+  initials(name: string): string {
+    return (name || '?').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+  }
+  avatarBg(name: string): string {
+    const grads = ['var(--gradient-1)', 'var(--gradient-2)', 'var(--gradient-purple)', 'var(--gradient-warm)', 'var(--gradient-success)'];
+    let h = 0;
+    for (const c of (name || '')) h = (h + c.charCodeAt(0)) % grads.length;
+    return grads[h];
+  }
 
   ngOnInit(): void {
     // search box -> debounce -> API call (avoid firing a request on every keystroke)

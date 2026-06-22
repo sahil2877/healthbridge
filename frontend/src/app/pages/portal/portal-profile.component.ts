@@ -10,33 +10,42 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule],
   template: `
     <div class="container">
-      <div class="page-header"><h2>My Profile</h2></div>
-
-      <div class="card" *ngIf="auth.currentUser() as u" style="max-width:520px;">
-        <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
-          <div style="width:64px; height:64px; border-radius:50%; background:var(--primary-light);
-                      color:var(--primary-dark); display:grid; place-items:center; font-size:1.6rem; font-weight:800;">
-            {{ initial(u.name) }}
-          </div>
-          <div>
-            <div style="font-weight:800; font-size:1.2rem;">{{ u.name }}</div>
-            <div style="color:var(--muted);">{{ u.email }}</div>
-            <span class="badge" style="margin-top:4px;">{{ u.role }}</span>
-          </div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>My Profile</h1>
+          <p>Manage your personal information and account.</p>
         </div>
+      </div>
 
-        <div class="table-wrap">
-          <table>
-            <tbody>
-              <tr><td><b>Name</b></td><td>{{ u.name }}</td></tr>
-              <tr><td><b>Email</b></td><td>{{ u.email }}</td></tr>
-              <tr><td><b>Role</b></td><td>{{ u.role }}</td></tr>
-              <tr><td><b>Wallet</b></td><td>₹1,000</td></tr>
-            </tbody>
-          </table>
+      <div class="card" *ngIf="auth.currentUser() as u" style="padding:0;overflow:hidden;">
+        <div class="profile-cover">
+          <div class="profile-avatar-lg">{{ initials(u.name) }}</div>
         </div>
+        <div class="profile-info-pad">
+          <h2>{{ u.name }}</h2>
+          <div class="email">{{ u.email }}</div>
 
-        <button class="btn btn-danger" style="margin-top:18px;" (click)="logout()">Logout</button>
+          <div class="profile-details">
+            <div class="profile-detail">
+              <small><i class="fa-solid fa-user"></i> Full name</small>
+              <strong>{{ u.name }}</strong>
+            </div>
+            <div class="profile-detail">
+              <small><i class="fa-solid fa-envelope"></i> Email</small>
+              <strong>{{ u.email }}</strong>
+            </div>
+            <div class="profile-detail">
+              <small><i class="fa-solid fa-id-badge"></i> Account type</small>
+              <strong style="text-transform:capitalize;">{{ u.role }}</strong>
+            </div>
+            <div class="profile-detail">
+              <small><i class="fa-solid fa-shield-halved"></i> Status</small>
+              <strong><span class="badge badge-success">Active</span></strong>
+            </div>
+          </div>
+
+          <button class="btn btn-danger" style="margin-top:20px;" (click)="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
       </div>
     </div>
   `
@@ -44,8 +53,8 @@ import { AuthService } from '../../services/auth.service';
 export class PortalProfileComponent {
   constructor(public auth: AuthService, private router: Router) {}
 
-  initial(name: string): string {
-    return (name || '?').charAt(0).toUpperCase();
+  initials(name: string): string {
+    return (name || '?').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
   }
 
   logout(): void {

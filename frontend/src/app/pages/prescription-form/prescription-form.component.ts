@@ -17,17 +17,19 @@ import { User } from '../../models/user.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>{{ isEdit ? 'Edit Prescription' : 'New Prescription' }}</h2>
-        <a class="btn btn-ghost" routerLink="/prescriptions">← Back</a>
+        <div class="page-title">
+          <h1>{{ isEdit ? 'Edit Prescription' : 'New Prescription' }}</h1>
+          <p>{{ isEdit ? 'Update prescription and medication details' : 'Prescribe medication for a patient' }}</p>
+        </div>
       </div>
 
       <div class="card">
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Patient *</label>
+              <label class="form-label">Patient *</label>
               <select class="form-control" formControlName="patient">
                 <option value="">-- Select patient --</option>
                 <option *ngFor="let p of patients" [value]="p._id">{{ p.name }} ({{ p.phone }})</option>
@@ -35,7 +37,7 @@ import { User } from '../../models/user.model';
               <div class="field-error" *ngIf="invalid('patient')">Patient required</div>
             </div>
             <div class="form-group">
-              <label>Doctor *</label>
+              <label class="form-label">Doctor *</label>
               <select class="form-control" formControlName="doctor">
                 <option value="">-- Select doctor --</option>
                 <option *ngFor="let d of doctors" [value]="d.id">{{ d.name }} ({{ d.role }})</option>
@@ -45,42 +47,24 @@ import { User } from '../../models/user.model';
           </div>
 
           <div class="form-group">
-            <label>Diagnosis</label>
+            <label class="form-label">Diagnosis</label>
             <input class="form-control" type="text" formControlName="diagnosis" placeholder="e.g. Viral fever" />
           </div>
 
           <!-- Dynamic medicine rows -->
-          <label style="font-weight:600; display:block; margin:8px 0;">Medicines *</label>
+          <label class="form-label" style="margin:8px 0;">Medicines *</label>
           <div formArrayName="items">
-            <div class="card" *ngFor="let item of items.controls; let i = index" [formGroupName]="i"
-                 style="margin-bottom:10px; background:var(--bg);">
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Medicine *</label>
-                  <input class="form-control" type="text" formControlName="drugName"
-                         list="common-drugs" placeholder="e.g. Paracetamol" />
-                </div>
-                <div class="form-group">
-                  <label>Dosage</label>
-                  <input class="form-control" type="text" formControlName="dosage" placeholder="500mg" />
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Frequency</label>
-                  <input class="form-control" type="text" formControlName="frequency" placeholder="1-0-1 / Twice a day" />
-                </div>
-                <div class="form-group">
-                  <label>Duration (days)</label>
-                  <input class="form-control" type="number" formControlName="durationDays" placeholder="5" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Instructions</label>
-                <input class="form-control" type="text" formControlName="instructions" placeholder="After food" />
-              </div>
-              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)"
-                      [disabled]="items.length === 1">Remove medicine</button>
+            <div class="med-row" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+              <input class="form-control" type="text" formControlName="drugName"
+                     list="common-drugs" placeholder="Medicine *" />
+              <input class="form-control" type="text" formControlName="dosage" placeholder="Dosage" />
+              <input class="form-control" type="text" formControlName="frequency" placeholder="Frequency" />
+              <input class="form-control" type="number" formControlName="durationDays" placeholder="Days" />
+              <input class="form-control" type="text" formControlName="instructions" placeholder="Instructions" />
+              <button type="button" class="remove-med" (click)="removeItem(i)"
+                      [disabled]="items.length === 1" title="Remove medicine">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
             </div>
           </div>
 
@@ -89,16 +73,16 @@ import { User } from '../../models/user.model';
           </datalist>
 
           <button type="button" class="btn btn-ghost btn-sm" (click)="addItem()" style="margin-bottom:16px;">
-            + Add another medicine
+            <i class="fa-solid fa-plus"></i> Add another medicine
           </button>
 
           <div class="form-group">
-            <label>Notes / Advice</label>
+            <label class="form-label">Notes / Advice</label>
             <textarea class="form-control" rows="2" formControlName="notes" placeholder="Follow up after 3 days"></textarea>
           </div>
 
           <div class="form-group" *ngIf="isEdit">
-            <label>Status</label>
+            <label class="form-label">Status</label>
             <select class="form-control" formControlName="status">
               <option value="active">Active</option>
               <option value="completed">Completed</option>
@@ -106,9 +90,13 @@ import { User } from '../../models/user.model';
             </select>
           </div>
 
-          <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ loading ? 'Saving...' : (isEdit ? 'Update Prescription' : 'Create Prescription') }}
-          </button>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-floppy-disk]="!loading"></i>
+              {{ loading ? 'Saving...' : (isEdit ? 'Update Prescription' : 'Create Prescription') }}
+            </button>
+            <a class="btn btn-ghost" routerLink="/prescriptions"><i class="fa-solid fa-xmark"></i> Cancel</a>
+          </div>
         </form>
       </div>
     </div>

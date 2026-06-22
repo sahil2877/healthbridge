@@ -13,45 +13,59 @@ import { User } from '../../models/user.model';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="container">
-      <div class="page-header"><h2>Doctor Consultation</h2></div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>Consult a Doctor</h1>
+          <p>Connect with specialists via secure video consultation.</p>
+        </div>
+      </div>
 
       <!-- Request a new consultation -->
-      <div class="card" style="margin-bottom:20px; max-width:560px;">
-        <h3 style="margin-top:0;">Request a video consultation</h3>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header"><div class="card-title">Request a video consultation</div></div>
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-        <div class="alert alert-success" *ngIf="requested">✅ Request sent! Join from the list below when ready.</div>
+        <div class="alert alert-success" *ngIf="requested"><i class="fa-solid fa-circle-check"></i> Request sent! Join from the list below when ready.</div>
 
-        <div class="form-group">
-          <label>Choose a doctor *</label>
-          <select class="form-control" [(ngModel)]="doctorId">
-            <option value="">-- Select doctor --</option>
-            <option *ngFor="let d of doctors" [value]="d._id">{{ d.name }}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Reason</label>
-          <input class="form-control" [(ngModel)]="reason" placeholder="e.g. Fever and cough for 3 days" />
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Choose a doctor *</label>
+            <select class="form-control" [(ngModel)]="doctorId">
+              <option value="">-- Select doctor --</option>
+              <option *ngFor="let d of doctors" [value]="d._id">{{ d.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason</label>
+            <input class="form-control" [(ngModel)]="reason" placeholder="e.g. Fever and cough for 3 days" />
+          </div>
         </div>
         <button class="btn btn-primary" [disabled]="requesting" (click)="submit()">
-          {{ requesting ? 'Requesting...' : 'Request Consultation' }}
+          <i class="fa-solid fa-video"></i> {{ requesting ? 'Requesting...' : 'Request Consultation' }}
         </button>
       </div>
 
       <!-- My consultations -->
       <div class="portal-h">My Consultations</div>
-      <div class="empty" *ngIf="consults.length === 0">No consultations yet.</div>
-      <div class="card" *ngFor="let c of consults" style="margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <strong>Dr. {{ doctorName(c) }}</strong>
-            <span class="badge" style="margin-left:8px;">{{ c.status }}</span>
-            <div style="color:var(--muted); font-size:0.85rem;">{{ c.reason }} · {{ c.createdAt | date:'short' }}</div>
+      <div class="empty-state" *ngIf="consults.length === 0"><i class="fa-solid fa-video-slash"></i><p>No consultations yet.</p></div>
+
+      <div class="doctor-grid">
+        <div class="teleconsult-card" *ngFor="let c of consults">
+          <div class="tc-patient">
+            <div class="avatar" style="background:var(--gradient-purple);">{{ initials(doctorName(c)) }}</div>
+            <div>
+              <h4>Dr. {{ doctorName(c) }}</h4>
+              <small>{{ c.createdAt | date:'medium' }}</small>
+            </div>
+            <span class="badge" [ngClass]="statusBadge(c.status)" style="margin-left:auto;">{{ c.status }}</span>
           </div>
-          <button class="btn btn-primary btn-sm" (click)="join(c)"
-                  *ngIf="c.status !== 'completed' && c.status !== 'cancelled'">🎥 Join Call</button>
-        </div>
-        <div *ngIf="c.summary" style="margin-top:8px; color:var(--muted); font-size:0.85rem;">
-          <b>Doctor's note:</b> {{ c.summary }}
+          <div class="tc-details">
+            <div><span>Reason</span><span>{{ c.reason || '—' }}</span></div>
+            <div *ngIf="c.summary"><span>Doctor's note</span><span>{{ c.summary }}</span></div>
+          </div>
+          <div class="tc-actions">
+            <button class="btn btn-primary btn-block" (click)="join(c)"
+                    *ngIf="c.status !== 'completed' && c.status !== 'cancelled'"><i class="fa-solid fa-video"></i> Join Call</button>
+          </div>
         </div>
       </div>
     </div>
@@ -82,6 +96,17 @@ export class PortalConsultComponent implements OnInit {
 
   doctorName(c: Consultation): string {
     return typeof c.doctor === 'object' ? (c.doctor as User).name : '';
+  }
+
+  initials(name: string): string {
+    return (name || '?').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  statusBadge(status?: string): string {
+    if (status === 'completed') return 'badge-success';
+    if (status === 'cancelled') return 'badge-danger';
+    if (status === 'active' || status === 'ongoing') return 'badge-primary';
+    return 'badge-info';
   }
 
   submit(): void {

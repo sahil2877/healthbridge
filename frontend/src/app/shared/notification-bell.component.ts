@@ -12,26 +12,37 @@ import { AppNotification } from '../models/notification.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="bell">
-      <button class="bell-btn" (click)="toggle()" title="Notifications">
-        🔔
-        <span class="bell-badge" *ngIf="unread > 0">{{ unread }}</span>
+    <div style="position:relative;">
+      <button class="icon-btn" (click)="toggle()" title="Notifications">
+        <i class="fa-solid fa-bell"></i>
+        <span class="dot" *ngIf="unread > 0"></span>
       </button>
 
-      <div class="bell-panel" *ngIf="open">
-        <div class="head">
-          <b>Notifications</b>
-          <a href="javascript:void(0)" (click)="markAll()" *ngIf="unread > 0" style="font-size:0.8rem;">Mark all read</a>
+      <div class="dropdown" *ngIf="open" style="display:block;">
+        <div class="dropdown-header">
+          <strong>Notifications</strong>
+          <span class="badge badge-primary" *ngIf="unread > 0">{{ unread }} new</span>
+          <a href="javascript:void(0)" (click)="markAll()" *ngIf="unread > 0" style="font-size:11px;">Mark all read</a>
         </div>
 
-        <div class="bell-empty" *ngIf="items.length === 0">No notifications yet.</div>
+        <div class="empty-state" *ngIf="items.length === 0" style="padding:24px;">
+          <i class="fa-solid fa-bell-slash"></i>
+          <p>No notifications yet.</p>
+        </div>
 
-        <div class="bell-item" *ngFor="let n of items" [class.unread]="!n.read" (click)="openItem(n)">
-          <div class="t">{{ n.title }}</div>
-          <div class="b" *ngIf="n.body">{{ n.body }}</div>
-          <div class="when">{{ n.createdAt | date:'short' }}</div>
+        <div class="notif-item" *ngFor="let n of items" [class.unread]="!n.read" (click)="openItem(n)">
+          <div class="notif-icon" [style.background]="iconBg(n)">
+            <i class="fa-solid" [ngClass]="iconClass(n)"></i>
+          </div>
+          <div class="notif-content">
+            <p>{{ n.title }}</p>
+            <small *ngIf="n.body">{{ n.body }}</small>
+            <small style="display:block;opacity:.7;">{{ n.createdAt | date:'short' }}</small>
+          </div>
         </div>
       </div>
+
+      <div *ngIf="open" (click)="open = false" style="position:fixed;inset:0;z-index:150;"></div>
     </div>
   `
 })
@@ -84,5 +95,24 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
     this.notifications.markAllRead().subscribe({
       next: () => { this.items.forEach((n) => n.read = true); this.unread = 0; }
     });
+  }
+
+  // Pick an icon + colour based on the notification title/type for a richer panel.
+  iconClass(n: AppNotification): string {
+    const t = (n.title || '').toLowerCase();
+    if (t.includes('appointment')) return 'fa-calendar-check';
+    if (t.includes('lab') || t.includes('result')) return 'fa-flask';
+    if (t.includes('prescription')) return 'fa-prescription-bottle-medical';
+    if (t.includes('insurance') || t.includes('claim')) return 'fa-shield-halved';
+    if (t.includes('invoice') || t.includes('payment') || t.includes('bill')) return 'fa-credit-card';
+    return 'fa-bell';
+  }
+  iconBg(n: AppNotification): string {
+    const t = (n.title || '').toLowerCase();
+    if (t.includes('appointment')) return 'var(--gradient-1)';
+    if (t.includes('lab') || t.includes('result')) return 'var(--gradient-success)';
+    if (t.includes('prescription')) return 'var(--gradient-purple)';
+    if (t.includes('insurance') || t.includes('claim')) return 'var(--gradient-warm)';
+    return 'var(--gradient-2)';
   }
 }

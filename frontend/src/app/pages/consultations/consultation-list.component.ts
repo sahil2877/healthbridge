@@ -14,36 +14,61 @@ import { User } from '../../models/user.model';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="container">
-      <div class="page-header"><h2>Teleconsultations</h2></div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>Teleconsultation</h1>
+          <p>HD video consultations with patients.</p>
+        </div>
+      </div>
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-      <div class="empty" *ngIf="loading">Loading...</div>
-      <div class="empty" *ngIf="!loading && consults.length === 0">No consultations yet.</div>
 
-      <div class="card" *ngFor="let c of consults" style="margin-bottom:14px;">
-        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <div>
-            <strong>{{ requesterName(c) }}</strong>
-            <span class="badge" [style.background]="statusBg(c.status)" [style.color]="'#fff'" style="margin-left:8px;">{{ c.status }}</span>
-            <div style="color:var(--muted); font-size:0.85rem; margin-top:4px;">
-              {{ c.reason || 'No reason given' }} · {{ c.createdAt | date:'short' }}
+      <div class="empty-state" *ngIf="loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading consultations...</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!loading && consults.length === 0">
+        <i class="fa-solid fa-video"></i>
+        <p>No consultations yet.</p>
+      </div>
+
+      <div class="doctor-grid" *ngIf="!loading && consults.length > 0">
+        <div class="teleconsult-card" *ngFor="let c of consults">
+          <div class="tc-patient">
+            <div class="avatar" style="background:var(--gradient-2)">{{ initials(c) }}</div>
+            <div>
+              <h4>{{ requesterName(c) }}</h4>
+              <small><span class="badge" [class]="'badge ' + statusBadge(c.status)">{{ c.status }}</span></small>
             </div>
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button class="btn btn-primary btn-sm" (click)="join(c)"
-                    *ngIf="c.status !== 'completed' && c.status !== 'cancelled'">🎥 Join</button>
-            <button class="btn btn-ghost btn-sm" (click)="end(c)"
-                    *ngIf="c.status === 'in_progress'">End</button>
-          </div>
-        </div>
 
-        <!-- Post-call summary -->
-        <div *ngIf="c.status === 'completed' || c.status === 'in_progress'" style="margin-top:12px;">
-          <div class="form-group" style="margin:0;">
-            <label>Doctor's summary</label>
-            <div style="display:flex; gap:8px;">
-              <input class="form-control" [(ngModel)]="c.summary" placeholder="Notes / advice after the call" />
-              <button class="btn btn-ghost btn-sm" (click)="saveSummary(c)">Save</button>
+          <div class="tc-details">
+            <div><span>Reason</span><span>{{ c.reason || 'No reason given' }}</span></div>
+            <div><span>Requested</span><span>{{ c.createdAt | date:'short' }}</span></div>
+          </div>
+
+          <div class="tc-actions">
+            <button class="btn btn-primary btn-sm" (click)="join(c)"
+                    *ngIf="c.status !== 'completed' && c.status !== 'cancelled'">
+              <i class="fa-solid fa-video"></i> Join
+            </button>
+            <button class="btn btn-ghost btn-sm" (click)="end(c)"
+                    *ngIf="c.status === 'in_progress'">
+              <i class="fa-solid fa-phone-slash"></i> End
+            </button>
+          </div>
+
+          <!-- Post-call summary -->
+          <div *ngIf="c.status === 'completed' || c.status === 'in_progress'" style="margin-top:14px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Doctor's summary</label>
+              <div style="display:flex; gap:8px;">
+                <input class="form-control" [(ngModel)]="c.summary" placeholder="Notes / advice after the call" />
+                <button class="btn btn-ghost btn-sm" (click)="saveSummary(c)">
+                  <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -74,6 +99,20 @@ export class ConsultationListComponent implements OnInit {
     if (status === 'completed') return '#64748b';
     if (status === 'cancelled') return '#dc2626';
     return '#2563eb';
+  }
+
+  // Avatar initials from the requester's name.
+  initials(c: Consultation): string {
+    const name = this.requesterName(c);
+    return name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  // Maps a consultation status to a design-system badge class.
+  statusBadge(status?: string): string {
+    if (status === 'in_progress') return 'badge-success';
+    if (status === 'completed') return 'badge-info';
+    if (status === 'cancelled') return 'badge-danger';
+    return 'badge-warning';
   }
 
   join(c: Consultation): void {

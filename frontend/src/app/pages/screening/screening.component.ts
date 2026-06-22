@@ -14,100 +14,119 @@ import { Patient } from '../../models/patient.model';
   template: `
     <div class="container">
       <div class="page-header">
-        <h2>Health Screening</h2>
-      </div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-
-        <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="form-group">
-            <label>Patient *</label>
-            <select class="form-control" formControlName="patient">
-              <option value="">-- Select patient --</option>
-              <option *ngFor="let p of patients" [value]="p._id">{{ p.name }} ({{ p.phone }})</option>
-            </select>
-            <div class="field-error" *ngIf="invalid('patient')">Patient required</div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Height (cm) *</label>
-              <input class="form-control" type="number" formControlName="heightCm" />
-              <div class="field-error" *ngIf="invalid('heightCm')">Valid height required</div>
-            </div>
-            <div class="form-group">
-              <label>Weight (kg) *</label>
-              <input class="form-control" type="number" formControlName="weightKg" />
-              <div class="field-error" *ngIf="invalid('weightKg')">Valid weight required</div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Systolic BP (upper)</label>
-              <input class="form-control" type="number" formControlName="systolic" />
-            </div>
-            <div class="form-group">
-              <label>Diastolic BP (lower)</label>
-              <input class="form-control" type="number" formControlName="diastolic" />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" formControlName="smoker" id="smoker" style="width:auto;" />
-              <label for="smoker" style="margin:0;">Smoker</label>
-            </div>
-            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" formControlName="diabetic" id="diabetic" style="width:auto;" />
-              <label for="diabetic" style="margin:0;">Diabetic</label>
-            </div>
-          </div>
-
-          <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ loading ? 'Calculating...' : 'Run Screening' }}
-          </button>
-        </form>
-      </div>
-
-      <!-- Result of the most recent screening -->
-      <div class="card" *ngIf="result" style="margin-bottom:16px;">
-        <h3 style="margin-top:0;">Result</h3>
-        <div class="form-row">
-          <div><b>BMI:</b> {{ result.bmi }} <span class="badge">{{ result.bmiCategory }}</span></div>
-          <div>
-            <b>Risk:</b>
-            <span class="badge" [style.background]="riskBg(result.riskLevel)" [style.color]="'#fff'">
-              {{ result.riskLevel }}
-            </span>
-            (score {{ result.riskScore }})
-          </div>
+        <div class="page-title">
+          <h1>Health Screening</h1>
+          <p>Predictive risk assessment from patient vitals.</p>
         </div>
-        <div style="margin-top:12px;">
-          <b>Recommendations:</b>
-          <ul style="margin:6px 0 0; padding-left:18px;">
-            <li *ngFor="let rec of result.recommendations">{{ rec }}</li>
-          </ul>
+      </div>
+
+      <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+
+      <div class="grid-2">
+        <!-- Questionnaire -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Patient Vitals & Lifestyle</div></div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <div class="form-group">
+              <label class="form-label">Patient *</label>
+              <select class="form-control" formControlName="patient">
+                <option value="">-- Select patient --</option>
+                <option *ngFor="let p of patients" [value]="p._id">{{ p.name }} ({{ p.phone }})</option>
+              </select>
+              <div class="field-error" *ngIf="invalid('patient')">Patient required</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Height (cm) *</label>
+                <input class="form-control" type="number" formControlName="heightCm" />
+                <div class="field-error" *ngIf="invalid('heightCm')">Valid height required</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Weight (kg) *</label>
+                <input class="form-control" type="number" formControlName="weightKg" />
+                <div class="field-error" *ngIf="invalid('weightKg')">Valid weight required</div>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Systolic BP (upper)</label>
+                <input class="form-control" type="number" formControlName="systolic" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Diastolic BP (lower)</label>
+                <input class="form-control" type="number" formControlName="diastolic" />
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" formControlName="smoker" id="smoker" style="width:auto;" />
+                <label for="smoker" class="form-label" style="margin:0;">Smoker</label>
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" formControlName="diabetic" id="diabetic" style="width:auto;" />
+                <label for="diabetic" class="form-label" style="margin:0;">Diabetic</label>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;" type="submit" [disabled]="loading">
+              <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-wand-magic-sparkles]="!loading"></i>
+              {{ loading ? 'Calculating...' : 'Run Screening' }}
+            </button>
+          </form>
+        </div>
+
+        <!-- Result of the most recent screening -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Screening Result</div></div>
+
+          <div class="risk-result low show" *ngIf="!result">
+            <div class="risk-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <h3>Awaiting Input</h3>
+            <p style="font-size:13px; color:var(--muted); margin-top:6px;">Complete the form and run screening to view the risk assessment.</p>
+          </div>
+
+          <div *ngIf="result">
+            <div class="risk-result show" [class]="'risk-result show ' + riskClass(result.riskLevel)">
+              <div class="risk-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+              <h3>{{ result.riskLevel }} Risk</h3>
+              <div class="score">{{ result.riskScore }}</div>
+              <p style="font-size:13px; color:var(--muted);">
+                BMI {{ result.bmi }} <span class="badge badge-info">{{ result.bmiCategory }}</span>
+              </p>
+            </div>
+            <div style="margin-top:16px;">
+              <div class="card-title" style="margin-bottom:8px;">Recommendations</div>
+              <ul style="margin:0; padding-left:18px; color:var(--muted); font-size:13px;">
+                <li *ngFor="let rec of result.recommendations" style="margin-bottom:4px;">{{ rec }}</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Past screenings -->
-      <div class="card">
-        <h3 style="margin-top:0;">Screening History</h3>
-        <div class="empty" *ngIf="history.length === 0">No screenings yet.</div>
+      <div class="card" style="margin-top:18px;">
+        <div class="card-header"><div class="card-title">Screening History</div></div>
+        <div class="empty-state" *ngIf="history.length === 0">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <p>No screenings yet.</p>
+        </div>
         <div class="table-wrap" *ngIf="history.length > 0">
           <table>
             <thead>
-              <tr><th>Date</th><th>Patient</th><th>BMI</th><th>Category</th><th>Risk</th></tr>
+              <tr><th>Patient</th><th>Date</th><th>BMI</th><th>Category</th><th>Risk</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let s of history">
-                <td>{{ s.createdAt | date:'mediumDate' }}</td>
                 <td>{{ patientName(s) }}</td>
+                <td>{{ s.createdAt | date:'mediumDate' }}</td>
                 <td>{{ s.bmi }}</td>
                 <td>{{ s.bmiCategory }}</td>
-                <td><span class="badge" [style.background]="riskBg(s.riskLevel)" [style.color]="'#fff'">{{ s.riskLevel }}</span></td>
+                <td><span class="badge" [class]="'badge ' + riskBadge(s.riskLevel)">{{ s.riskLevel }}</span></td>
               </tr>
             </tbody>
           </table>
@@ -159,6 +178,20 @@ export class ScreeningComponent implements OnInit {
     if (level === 'High') return '#dc2626';
     if (level === 'Medium') return '#d97706';
     return '#0d9488';
+  }
+
+  // Modifier for the .risk-result panel (low/medium/high).
+  riskClass(level?: string): string {
+    if (level === 'High') return 'high';
+    if (level === 'Medium') return 'medium';
+    return 'low';
+  }
+
+  // Design-system badge class for a risk level.
+  riskBadge(level?: string): string {
+    if (level === 'High') return 'badge-danger';
+    if (level === 'Medium') return 'badge-warning';
+    return 'badge-success';
   }
 
   invalid(field: string): boolean {

@@ -13,20 +13,33 @@ import { Patient } from '../../models/patient.model';
   imports: [CommonModule, RouterLink],
   template: `
     <div class="container">
-      <div class="page-header"><h2>Insurance</h2></div>
+      <div class="page-header">
+        <div class="page-title">
+          <h1>Insurance Management</h1>
+          <p>Track policies and process claims.</p>
+        </div>
+        <a class="btn btn-primary" *ngIf="canWrite()" routerLink="/insurance/policies/new">
+          <i class="fa-solid fa-plus"></i> Add Policy
+        </a>
+      </div>
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
       <!-- Policies -->
-      <div class="card" style="margin-bottom:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h3 style="margin:0;">Policies</h3>
-          <a class="btn btn-primary btn-sm" *ngIf="canWrite()" routerLink="/insurance/policies/new">+ New Policy</a>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-header">
+          <div class="card-title">Insurance Policies</div>
+          <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" routerLink="/insurance/policies/new">
+            <i class="fa-solid fa-plus"></i> New Policy
+          </a>
         </div>
-        <div class="empty" *ngIf="policies.length === 0">No policies yet.</div>
+        <div class="empty-state" *ngIf="policies.length === 0">
+          <i class="fa-solid fa-shield-heart"></i>
+          <p>No policies yet.</p>
+        </div>
         <div class="table-wrap" *ngIf="policies.length > 0">
           <table>
-            <thead><tr><th>Payer</th><th>Policy #</th><th>Patient</th><th>Coverage</th><th>Valid To</th><th style="text-align:right;">Actions</th></tr></thead>
+            <thead><tr><th>Provider</th><th>Policy #</th><th>Patient</th><th>Coverage</th><th>Validity</th><th>Actions</th></tr></thead>
             <tbody>
               <tr *ngFor="let p of policies">
                 <td><strong>{{ p.payerName }}</strong></td>
@@ -34,9 +47,13 @@ import { Patient } from '../../models/patient.model';
                 <td>{{ patientName(p.patient) }}</td>
                 <td>₹{{ p.coverageAmount }}</td>
                 <td>{{ p.validTo ? (p.validTo | date:'mediumDate') : '-' }}</td>
-                <td style="text-align:right; white-space:nowrap;">
-                  <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" [routerLink]="['/insurance/policies', p._id, 'edit']">Edit</a>
-                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="removePolicy(p)">Delete</button>
+                <td style="white-space:nowrap;">
+                  <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" [routerLink]="['/insurance/policies', p._id, 'edit']">
+                    <i class="fa-solid fa-pen"></i> Edit
+                  </a>
+                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="removePolicy(p)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -46,14 +63,19 @@ import { Patient } from '../../models/patient.model';
 
       <!-- Claims -->
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h3 style="margin:0;">Claims</h3>
-          <a class="btn btn-primary btn-sm" *ngIf="canWrite()" routerLink="/insurance/claims/new">+ New Claim</a>
+        <div class="card-header">
+          <div class="card-title">Recent Claims</div>
+          <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" routerLink="/insurance/claims/new">
+            <i class="fa-solid fa-plus"></i> New Claim
+          </a>
         </div>
-        <div class="empty" *ngIf="claims.length === 0">No claims yet.</div>
+        <div class="empty-state" *ngIf="claims.length === 0">
+          <i class="fa-solid fa-file-medical"></i>
+          <p>No claims yet.</p>
+        </div>
         <div class="table-wrap" *ngIf="claims.length > 0">
           <table>
-            <thead><tr><th>Claim #</th><th>Patient</th><th>Payer</th><th>Claimed</th><th>Approved</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
+            <thead><tr><th>Claim #</th><th>Patient</th><th>Provider</th><th>Claimed</th><th>Approved</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               <tr *ngFor="let c of claims">
                 <td><strong>{{ c.claimNumber }}</strong></td>
@@ -61,10 +83,14 @@ import { Patient } from '../../models/patient.model';
                 <td>{{ payerName(c.policy) }}</td>
                 <td>₹{{ c.amountClaimed }}</td>
                 <td>₹{{ c.amountApproved }}</td>
-                <td><span class="badge" [style.background]="claimBg(c.status)" [style.color]="'#fff'">{{ c.status }}</span></td>
-                <td style="text-align:right; white-space:nowrap;">
-                  <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" [routerLink]="['/insurance/claims', c._id, 'edit']">Edit</a>
-                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="removeClaim(c)">Delete</button>
+                <td><span class="badge" [class]="'badge ' + claimBadge(c.status)">{{ c.status }}</span></td>
+                <td style="white-space:nowrap;">
+                  <a class="btn btn-ghost btn-sm" *ngIf="canWrite()" [routerLink]="['/insurance/claims', c._id, 'edit']">
+                    <i class="fa-solid fa-pen"></i> Edit
+                  </a>
+                  <button class="btn btn-danger btn-sm" *ngIf="auth.hasRole('admin')" (click)="removeClaim(c)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -104,6 +130,14 @@ export class InsuranceComponent implements OnInit {
     if (status === 'rejected') return '#dc2626';
     if (status === 'submitted') return '#2563eb';
     return '#64748b';
+  }
+
+  // Maps a claim status to a design-system badge class.
+  claimBadge(status?: string): string {
+    if (status === 'approved' || status === 'paid') return 'badge-success';
+    if (status === 'rejected') return 'badge-danger';
+    if (status === 'submitted') return 'badge-info';
+    return 'badge-warning';
   }
 
   canWrite(): boolean {
