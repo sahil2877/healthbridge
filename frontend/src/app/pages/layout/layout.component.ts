@@ -124,7 +124,7 @@ import { NotificationBellComponent } from '../../shared/notification-bell.compon
 
       <!-- outside-click catcher for the profile dropdown -->
       <div *ngIf="profileOpen" (click)="profileOpen = false"
-           style="position:fixed;inset:0;z-index:150;"></div>
+           style="position:fixed;inset:0;z-index:80;"></div>
     </div>
   `
 })
