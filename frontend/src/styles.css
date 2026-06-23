@@ -274,29 +274,38 @@ a:hover { text-decoration: none; }
 .nav-search { flex: 1; max-width: 420px; position: relative; }
 .nav-search input {
   width: 100%;
-  padding: 10px 14px 10px 40px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
+  padding: 11px 50px 11px 42px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
   color: var(--text);
   font-family: inherit;
   font-size: 13px;
-  transition: all 0.2s;
+  letter-spacing: 0.01em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-search input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12); }
-.nav-search i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+.nav-search input::placeholder { color: var(--muted); opacity: 0.7; font-weight: 400; }
+.nav-search input:hover { border-color: color-mix(in srgb, var(--primary) 40%, transparent); background: var(--card); }
+.nav-search input:focus { outline: none; border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.10), 0 4px 12px rgba(0,0,0,0.04); }
+.nav-search input:focus::placeholder { opacity: 0.4; }
+.nav-search i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; transition: color 0.25s; pointer-events: none; }
+.nav-search:focus-within i { color: var(--primary); }
 .nav-search kbd {
   position: absolute;
-  right: 12px; top: 50%;
+  right: 11px; top: 50%;
   transform: translateY(-50%);
   font-size: 10px;
-  padding: 2px 6px;
-  background: var(--bg);
+  padding: 3px 7px;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
   color: var(--muted);
   font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  pointer-events: none;
+  transition: opacity 0.2s, border-color 0.2s;
 }
+.nav-search:focus-within kbd { opacity: 0.3; border-color: transparent; }
 
 /* portal horizontal menu */
 .nav-menu { display: flex; gap: 4px; margin: 0 auto; }
@@ -1088,8 +1097,24 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
 .filter-bar .form-control { width: auto; min-width: 160px; }
 .search-box { position: relative; flex: 1; min-width: 220px; }
-.search-box input { width: 100%; padding-left: 36px; }
-.search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+.search-box input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.search-box input::placeholder { color: var(--muted); opacity: 0.7; font-weight: 400; }
+.search-box input:hover { border-color: color-mix(in srgb, var(--primary) 40%, transparent); background: var(--card); }
+.search-box input:focus { outline: none; border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.10), 0 4px 12px rgba(0,0,0,0.04); }
+.search-box input:focus::placeholder { opacity: 0.4; }
+.search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; transition: color 0.25s; pointer-events: none; }
+.search-box:focus-within i { color: var(--primary); }
 
 .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
 .page-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); cursor: pointer; font-family: inherit; font-size: 12px; color: var(--text); transition: all 0.15s; }
