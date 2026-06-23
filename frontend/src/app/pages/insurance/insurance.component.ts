@@ -119,6 +119,7 @@ export class InsuranceComponent implements OnInit {
   }
 
   patientName(p: string | Patient): string {
+    if (!p) return '(Deleted Patient)';
     return typeof p === 'object' ? (p as Patient).name : p;
   }
   payerName(p: string | PolicyRef): string {

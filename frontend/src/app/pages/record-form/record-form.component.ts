@@ -145,11 +145,13 @@ export class RecordFormComponent implements OnInit {
   }
 
   private patchForm(r: ClinicalRecord): void {
-    const patientId = typeof r.patient === 'object' ? (r.patient as Patient)._id : r.patient;
-    const doctorId = typeof r.doctor === 'object' ? (r.doctor as User).id : r.doctor;
+    const patientObj = r.patient as Patient | null;
+    const doctorObj = r.doctor as User | null;
+    const patientId: string = patientObj && typeof patientObj === 'object' ? (patientObj._id || '') : (r.patient as string || '');
+    const doctorId: string = doctorObj && typeof doctorObj === 'object' ? (doctorObj.id || '') : (r.doctor as string || '');
     this.form.patchValue({
-      patient: patientId || '',
-      doctor: doctorId || '',
+      patient: patientId,
+      doctor: doctorId,
       diagnosis: r.diagnosis,
       prescription: r.prescription || '',
       notes: r.notes || ''

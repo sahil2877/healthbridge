@@ -164,7 +164,8 @@ export class InvoiceViewComponent implements OnInit {
   }
 
   get patient(): Patient | null {
-    return this.inv && typeof this.inv.patient === 'object' ? (this.inv.patient as Patient) : null;
+    if (!this.inv || !this.inv.patient) return null;
+    return typeof this.inv.patient === 'object' ? (this.inv.patient as Patient) : null;
   }
   get balance(): number {
     return this.inv ? (this.inv.total || 0) - (this.inv.amountPaid || 0) : 0;

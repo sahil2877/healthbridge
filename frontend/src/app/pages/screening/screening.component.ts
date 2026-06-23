@@ -171,7 +171,9 @@ export class ScreeningComponent implements OnInit {
   }
 
   patientName(s: Screening): string {
-    return typeof s.patient === 'object' ? (s.patient as Patient).name : s.patient;
+    const p = s.patient;
+    if (!p) return '(Deleted Patient)';
+    return typeof p === 'object' ? (p as Patient).name : p;
   }
 
   riskBg(level?: string): string {

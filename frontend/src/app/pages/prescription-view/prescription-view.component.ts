@@ -113,7 +113,8 @@ export class PrescriptionViewComponent implements OnInit {
   }
 
   get patient(): Patient | null {
-    return this.rx && typeof this.rx.patient === 'object' ? (this.rx.patient as Patient) : null;
+    if (!this.rx || !this.rx.patient) return null;
+    return typeof this.rx.patient === 'object' ? (this.rx.patient as Patient) : null;
   }
   get doctorName(): string {
     return this.rx && typeof this.rx.doctor === 'object' ? (this.rx.doctor as User).name : '';

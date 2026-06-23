@@ -121,7 +121,8 @@ export class PolicyFormComponent implements OnInit {
   }
 
   private patchForm(p: InsurancePolicy): void {
-    const patientId = typeof p.patient === 'object' ? (p.patient as Patient)._id : p.patient;
+    const pat = p.patient;
+    const patientId: string = pat && typeof pat === 'object' ? ((pat as Patient)._id || '') : (p.patient as string || '');
     this.form.patchValue({
       patient: patientId || '',
       payerName: p.payerName,

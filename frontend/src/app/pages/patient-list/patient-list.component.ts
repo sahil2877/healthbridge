@@ -131,7 +131,7 @@ export class PatientListComponent implements OnInit {
 
   remove(p: Patient): void {
     if (!p._id) return;
-    if (!confirm(`Delete patient "${p.name}"?`)) return;
+    if (!confirm(`Delete patient "${p.name}"?\n\nThis will also permanently delete ALL related records:\nappointments, clinical records, prescriptions, invoices, lab orders, and more.\n\nThis action cannot be undone.`)) return;
 
     this.patientService.delete(p._id).subscribe({
       next: () => this.patients = this.patients.filter((x) => x._id !== p._id),

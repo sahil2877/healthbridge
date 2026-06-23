@@ -114,22 +114,26 @@ export class ClaimFormComponent implements OnInit {
   }
 
   patientName(p: InsurancePolicy): string {
-    return typeof p.patient === 'object' ? (p.patient as Patient).name : '';
+    const pat = p.patient;
+    if (!pat) return '(Deleted Patient)';
+    return typeof pat === 'object' ? (pat as Patient).name : '';
   }
 
   // When a policy is picked, copy its patient onto the claim
   onPolicyChange(): void {
     const selected = this.policies.find((p) => p._id === this.form.value.policy);
     if (selected) {
-      const patientId = typeof selected.patient === 'object'
-        ? (selected.patient as Patient)._id : selected.patient;
-      this.form.patchValue({ patient: patientId || '' });
+      const pat = selected.patient;
+      const patientId: string = pat && typeof pat === 'object' ? ((pat as Patient)._id || '') : (selected.patient as string || '');
+      this.form.patchValue({ patient: patientId });
     }
   }
 
   private patchForm(c: Claim): void {
-    const policyId = typeof c.policy === 'object' ? (c.policy as PolicyRef)._id : c.policy;
-    const patientId = typeof c.patient === 'object' ? (c.patient as Patient)._id : c.patient;
+    const pol = c.policy;
+    const policyId: string = pol && typeof pol === 'object' ? ((pol as PolicyRef)._id || '') : (c.policy as string || '');
+    const pat = c.patient;
+    const patientId: string = pat && typeof pat === 'object' ? ((pat as Patient)._id || '') : (c.patient as string || '');
     this.form.patchValue({
       policy: policyId || '',
       patient: patientId || '',

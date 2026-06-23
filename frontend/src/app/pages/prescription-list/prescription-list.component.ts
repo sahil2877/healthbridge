@@ -151,7 +151,9 @@ export class PrescriptionListComponent implements OnInit {
   }
 
   patientName(rx: Prescription): string {
-    return typeof rx.patient === 'object' ? (rx.patient as Patient).name : rx.patient;
+    const p = rx.patient;
+    if (!p) return '(Deleted Patient)';
+    return typeof p === 'object' ? (p as Patient).name : p;
   }
   doctorName(rx: Prescription): string {
     return typeof rx.doctor === 'object' ? (rx.doctor as User).name : rx.doctor;

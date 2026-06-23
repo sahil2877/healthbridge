@@ -227,10 +227,14 @@ export class DashboardComponent implements OnInit {
   }
 
   invPatient(inv: Invoice): string {
-    return typeof inv.patient === 'object' ? (inv.patient as Patient).name : 'Patient';
+    const p = inv.patient;
+    if (!p) return '(Deleted)';
+    return typeof p === 'object' ? (p as Patient).name : 'Patient';
   }
   apptPatient(a: Appointment): string {
-    return typeof a.patient === 'object' ? (a.patient as Patient).name : 'Patient';
+    const p = a.patient;
+    if (!p) return '(Deleted)';
+    return typeof p === 'object' ? (p as Patient).name : 'Patient';
   }
   apptDoctor(a: Appointment): string {
     return typeof a.doctor === 'object' ? (a.doctor as User).name : 'Doctor';

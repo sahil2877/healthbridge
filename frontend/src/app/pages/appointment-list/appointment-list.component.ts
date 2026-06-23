@@ -150,12 +150,17 @@ export class AppointmentListComponent implements OnInit {
     });
   }
 
-  // patient/doctor come back populated (objects) from the list endpoint
+  // patient/doctor come back populated (objects) from the list endpoint.
+  // When the patient was deleted, the populated field is null — show a placeholder.
   patientName(a: Appointment): string {
-    return typeof a.patient === 'object' ? (a.patient as Patient).name : a.patient;
+    const p = a.patient;
+    if (!p) return '(Deleted Patient)';
+    return typeof p === 'object' ? p.name : p;
   }
   doctorName(a: Appointment): string {
-    return typeof a.doctor === 'object' ? (a.doctor as User).name : a.doctor;
+    const d = a.doctor;
+    if (!d) return '(Unknown)';
+    return typeof d === 'object' ? d.name : d;
   }
 
   changeStatus(a: Appointment, status: string): void {

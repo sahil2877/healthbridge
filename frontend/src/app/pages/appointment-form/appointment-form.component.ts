@@ -128,13 +128,16 @@ export class AppointmentFormComponent implements OnInit {
     }
   }
 
-  // Fill the form, converting populated objects to their ids
+  // Fill the form, converting populated objects to their ids.
+  // Guard against null (patient was deleted → populated field is null).
   private patchForm(a: Appointment): void {
-    const patientId = typeof a.patient === 'object' ? (a.patient as Patient)._id : a.patient;
-    const doctorId = typeof a.doctor === 'object' ? (a.doctor as User).id : a.doctor;
+    const p = a.patient;
+    const d = a.doctor;
+    const patientId: string = p && typeof p === 'object' ? ((p as Patient)._id || '') : (a.patient as string || '');
+    const doctorId: string = d && typeof d === 'object' ? ((d as User).id || '') : (a.doctor as string || '');
     this.form.patchValue({
-      patient: patientId || '',
-      doctor: doctorId || '',
+      patient: patientId,
+      doctor: doctorId,
       date: this.toLocalInput(a.date),
       reason: a.reason,
       notes: a.notes || '',

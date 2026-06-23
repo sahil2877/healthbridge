@@ -173,8 +173,10 @@ export class PrescriptionFormComponent implements OnInit {
   }
 
   private patchForm(rx: Prescription): void {
-    const patientId = typeof rx.patient === 'object' ? (rx.patient as Patient)._id : rx.patient;
-    const doctorId = typeof rx.doctor === 'object' ? (rx.doctor as User).id : rx.doctor;
+    const pat = rx.patient;
+    const doctor = rx.doctor;
+    const patientId = pat && typeof pat === 'object' ? (pat as Patient)._id : rx.patient;
+    const doctorId = doctor && typeof doctor === 'object' ? (doctor as User).id : rx.doctor;
 
     // Rebuild the items FormArray to match the saved medicines
     this.items.clear();

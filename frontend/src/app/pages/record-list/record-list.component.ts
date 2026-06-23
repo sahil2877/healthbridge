@@ -137,10 +137,14 @@ export class RecordListComponent implements OnInit {
   }
 
   patientName(r: ClinicalRecord): string {
-    return typeof r.patient === 'object' ? (r.patient as Patient).name : r.patient;
+    const p = r.patient;
+    if (!p) return '(Deleted Patient)';
+    return typeof p === 'object' ? (p as Patient).name : p;
   }
   doctorName(r: ClinicalRecord): string {
-    return typeof r.doctor === 'object' ? (r.doctor as User).name : r.doctor;
+    const d = r.doctor;
+    if (!d) return '(Unknown)';
+    return typeof d === 'object' ? (d as User).name : d;
   }
 
   // Documents are served from the backend host (port 5000), not the Angular host

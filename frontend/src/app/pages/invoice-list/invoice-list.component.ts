@@ -114,7 +114,9 @@ export class InvoiceListComponent implements OnInit {
   }
 
   patientName(inv: Invoice): string {
-    return typeof inv.patient === 'object' ? (inv.patient as Patient).name : inv.patient;
+    const p = inv.patient;
+    if (!p) return '(Deleted Patient)';
+    return typeof p === 'object' ? (p as Patient).name : p;
   }
 
   statusBg(status?: string): string {

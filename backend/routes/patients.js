@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Patient = require('../models/Patient');
+const Appointment = require('../models/Appointment');
+const ClinicalRecord = require('../models/ClinicalRecord');
+const Prescription = require('../models/Prescription');
+const Invoice = require('../models/Invoice');
+const Screening = require('../models/Screening');
+const LabOrder = require('../models/LabOrder');
+const Consultation = require('../models/Consultation');
+const InsurancePolicy = require('../models/InsurancePolicy');
+const Claim = require('../models/Claim');
 const auth = require('../middleware/auth');
 const role = require('../middleware/role');
 const { getOrCreateSelfPatient } = require('../utils/selfPatient');
@@ -72,12 +81,32 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// @route  DELETE /api/patients/:id  -> delete a patient (admin only)
+// @route  DELETE /api/patients/:id  -> delete a patient + all related records (admin only)
 router.delete('/:id', role('admin'), async (req, res) => {
   try {
-    const patient = await Patient.findByIdAndDelete(req.params.id);
+    const patientId = req.params.id;
+
+    const patient = await Patient.findById(patientId);
     if (!patient) return res.status(404).json({ message: 'Patient not found' });
-    res.json({ message: 'Patient deleted' });
+
+    // Cascade-delete every related record so no orphaned references remain.
+    // Appointments list, records, prescriptions etc. would show blank data
+    // when their linked patient no longer exists.
+    await Promise.all([
+      Appointment.deleteMany({ patient: patientId }),
+      ClinicalRecord.deleteMany({ patient: patientId }),
+      Prescription.deleteMany({ patient: patientId }),
+      Invoice.deleteMany({ patient: patientId }),
+      Screening.deleteMany({ patient: patientId }),
+      LabOrder.deleteMany({ patient: patientId }),
+      Consultation.deleteMany({ patient: patientId }),
+      InsurancePolicy.deleteMany({ patient: patientId }),
+      Claim.deleteMany({ patient: patientId }),
+    ]);
+
+    await Patient.findByIdAndDelete(patientId);
+
+    res.json({ message: 'Patient and all related records deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

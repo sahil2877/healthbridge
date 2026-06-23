@@ -151,7 +151,8 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   private patchForm(inv: Invoice): void {
-    const patientId = typeof inv.patient === 'object' ? (inv.patient as Patient)._id : inv.patient;
+    const p = inv.patient;
+    const patientId = p && typeof p === 'object' ? (p as Patient)._id : inv.patient;
     this.items.clear();
     (inv.items || []).forEach((it) => {
       const g = this.newItem();
