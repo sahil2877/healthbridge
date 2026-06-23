@@ -154,7 +154,7 @@ export class AppointmentListComponent implements OnInit {
   // When the patient was deleted, the populated field is null — show a placeholder.
   patientName(a: Appointment): string {
     const p = a.patient;
-    if (!p) return '(Deleted Patient)';
+    if (!p) return 'Deleted';
     return typeof p === 'object' ? p.name : p;
   }
   doctorName(a: Appointment): string {

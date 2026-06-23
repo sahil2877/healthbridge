@@ -172,7 +172,7 @@ export class ScreeningComponent implements OnInit {
 
   patientName(s: Screening): string {
     const p = s.patient;
-    if (!p) return '(Deleted Patient)';
+    if (!p) return 'Deleted';
     return typeof p === 'object' ? (p as Patient).name : p;
   }
 

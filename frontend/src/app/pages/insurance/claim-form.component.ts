@@ -115,7 +115,7 @@ export class ClaimFormComponent implements OnInit {
 
   patientName(p: InsurancePolicy): string {
     const pat = p.patient;
-    if (!pat) return '(Deleted Patient)';
+    if (!pat) return 'Deleted';
     return typeof pat === 'object' ? (pat as Patient).name : '';
   }
 

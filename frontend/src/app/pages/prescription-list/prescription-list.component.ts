@@ -152,7 +152,7 @@ export class PrescriptionListComponent implements OnInit {
 
   patientName(rx: Prescription): string {
     const p = rx.patient;
-    if (!p) return '(Deleted Patient)';
+    if (!p) return 'Deleted';
     return typeof p === 'object' ? (p as Patient).name : p;
   }
   doctorName(rx: Prescription): string {

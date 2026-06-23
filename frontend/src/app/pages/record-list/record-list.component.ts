@@ -138,7 +138,7 @@ export class RecordListComponent implements OnInit {
 
   patientName(r: ClinicalRecord): string {
     const p = r.patient;
-    if (!p) return '(Deleted Patient)';
+    if (!p) return 'Deleted';
     return typeof p === 'object' ? (p as Patient).name : p;
   }
   doctorName(r: ClinicalRecord): string {
