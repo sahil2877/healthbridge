@@ -12,6 +12,19 @@ const patientSchema = new mongoose.Schema({
   address:     { type: String },
   bloodGroup:  { type: String, enum: ['A+','A-','B+','B-','O+','O-','AB+','AB-','Unknown'], default: 'Unknown' },
 
+  // Medical profile — key history for safer clinical decisions
+  allergies:           { type: String },   // e.g. "Penicillin, Peanuts"
+  chronicConditions:   { type: String },   // e.g. "Diabetes Type 2, Hypertension"
+  currentMedications:  { type: String },   // e.g. "Metformin 500mg, Lisinopril 10mg"
+
+  // Emergency contact
+  emergencyContactName:  { type: String },
+  emergencyContactPhone: { type: String },
+
+  // Physical measurements (helpful for dosage calculations, BMI, etc.)
+  height: { type: Number },   // cm
+  weight: { type: Number },   // kg
+
   // The patient-portal login this record belongs to (links a User to clinical data)
   user:        { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 

@@ -722,6 +722,17 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .form-grid, .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .field-error { color: var(--danger); font-size: 0.8rem; margin-top: 4px; }
+.form-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 28px 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.form-section-title:first-child { margin-top: 0; }
+.form-section-title i { font-size: 0.9rem; opacity: 0.7; }
 @media (max-width: 600px) { .form-grid, .form-grid-3, .form-row { grid-template-columns: 1fr; } }
 
 /* ===================== ALERTS ===================== */

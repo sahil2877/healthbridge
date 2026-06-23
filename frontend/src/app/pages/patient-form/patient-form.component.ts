@@ -15,7 +15,7 @@ import { Patient } from '../../models/patient.model';
       <div class="page-header">
         <div class="page-title">
           <h1>{{ isEdit ? 'Edit Patient' : 'Onboard Patient' }}</h1>
-          <p>{{ isEdit ? 'Update patient demographic details' : 'Register a new patient into HealthBridge' }}</p>
+          <p>{{ isEdit ? 'Update patient details' : 'Register a new patient with complete medical profile' }}</p>
         </div>
       </div>
 
@@ -23,15 +23,17 @@ import { Patient } from '../../models/patient.model';
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
+          <!-- ===== Demographics ===== -->
+          <h3 class="form-section-title"><i class="fa-solid fa-user"></i> Personal Details</h3>
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label">Full Name *</label>
-              <input class="form-control" type="text" formControlName="name" />
+              <input class="form-control" type="text" formControlName="name" placeholder="e.g. Anand Sharma" />
               <div class="field-error" *ngIf="invalid('name')">Name required</div>
             </div>
             <div class="form-group">
               <label class="form-label">Phone *</label>
-              <input class="form-control" type="text" formControlName="phone" />
+              <input class="form-control" type="text" formControlName="phone" placeholder="e.g. 9876543210" />
               <div class="field-error" *ngIf="invalid('phone')">Phone required</div>
             </div>
           </div>
@@ -39,7 +41,7 @@ import { Patient } from '../../models/patient.model';
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label">Age *</label>
-              <input class="form-control" type="number" formControlName="age" />
+              <input class="form-control" type="number" formControlName="age" placeholder="Years" />
               <div class="field-error" *ngIf="invalid('age')">Valid age required</div>
             </div>
             <div class="form-group">
@@ -55,7 +57,7 @@ import { Patient } from '../../models/patient.model';
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label">Email</label>
-              <input class="form-control" type="email" formControlName="email" />
+              <input class="form-control" type="email" formControlName="email" placeholder="patient@example.com" />
             </div>
             <div class="form-group">
               <label class="form-label">Blood Group</label>
@@ -67,10 +69,51 @@ import { Patient } from '../../models/patient.model';
 
           <div class="form-group">
             <label class="form-label">Address</label>
-            <textarea class="form-control" rows="2" formControlName="address"></textarea>
+            <textarea class="form-control" rows="2" formControlName="address" placeholder="Full residential address"></textarea>
           </div>
 
-          <div style="display:flex; gap:10px; margin-top:8px;">
+          <!-- ===== Medical Profile ===== -->
+          <h3 class="form-section-title"><i class="fa-solid fa-notes-medical"></i> Medical History</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Height (cm)</label>
+              <input class="form-control" type="number" formControlName="height" placeholder="e.g. 168" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Weight (kg)</label>
+              <input class="form-control" type="number" formControlName="weight" placeholder="e.g. 72" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Allergies</label>
+            <textarea class="form-control" rows="2" formControlName="allergies" placeholder="e.g. Penicillin, Peanuts, Latex — write 'None' if none"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Chronic / Existing Conditions</label>
+            <textarea class="form-control" rows="2" formControlName="chronicConditions" placeholder="e.g. Diabetes Type 2, Hypertension, Asthma — write 'None' if none"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Current Medications</label>
+            <textarea class="form-control" rows="2" formControlName="currentMedications" placeholder="e.g. Metformin 500mg daily, Lisinopril 10mg — write 'None' if none"></textarea>
+          </div>
+
+          <!-- ===== Emergency Contact ===== -->
+          <h3 class="form-section-title"><i class="fa-solid fa-phone-volume"></i> Emergency Contact</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Contact Name</label>
+              <input class="form-control" type="text" formControlName="emergencyContactName" placeholder="e.g. Priya Sharma (Wife)" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Phone</label>
+              <input class="form-control" type="text" formControlName="emergencyContactPhone" placeholder="e.g. 9876543211" />
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:20px;">
             <button class="btn btn-primary" type="submit" [disabled]="loading">
               <i class="fa-solid" [class.fa-spinner]="loading" [class.fa-spin]="loading" [class.fa-floppy-disk]="!loading"></i>
               {{ loading ? 'Saving...' : (isEdit ? 'Update Patient' : 'Onboard Patient') }}
@@ -90,13 +133,23 @@ export class PatientFormComponent implements OnInit {
   bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'Unknown'];
 
   form = this.fb.group({
+    // Demographics
     name: ['', Validators.required],
     age: [null as number | null, [Validators.required, Validators.min(0), Validators.max(150)]],
     gender: ['Male', Validators.required],
     phone: ['', Validators.required],
     email: [''],
     address: [''],
-    bloodGroup: ['Unknown']
+    bloodGroup: ['Unknown'],
+    // Medical profile
+    height: [null as number | null],
+    weight: [null as number | null],
+    allergies: [''],
+    chronicConditions: [''],
+    currentMedications: [''],
+    // Emergency contact
+    emergencyContactName: [''],
+    emergencyContactPhone: ['']
   });
 
   constructor(
