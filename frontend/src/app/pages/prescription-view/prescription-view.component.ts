@@ -89,8 +89,18 @@ import { User } from '../../models/user.model';
     .rx-sub { color: var(--muted); font-size: 0.85rem; }
     .rx-patient { margin: 10px 0; line-height: 1.6; }
     .rx-symbol { font-size: 2rem; font-weight: 700; color: var(--primary); margin: 6px 0; }
-    .rx-table { width:100%; border-collapse: collapse; margin-bottom: 16px; }
-    .rx-table th, .rx-table td { border:1px solid var(--border); padding:8px 10px; font-size:0.9rem; text-align:left; }
+    .rx-table { width:100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; }
+    .rx-table th, .rx-table td {
+      border:1px solid var(--border); padding:8px 10px; font-size:0.9rem; text-align:left;
+      overflow-wrap: break-word; word-break: break-word; vertical-align: top;
+    }
+    /* Constrain column widths so long instructions wrap instead of overflowing */
+    .rx-table th:nth-child(1), .rx-table td:nth-child(1) { width: 5%; }
+    .rx-table th:nth-child(2), .rx-table td:nth-child(2) { width: 20%; }
+    .rx-table th:nth-child(3), .rx-table td:nth-child(3) { width: 12%; }
+    .rx-table th:nth-child(4), .rx-table td:nth-child(4) { width: 15%; }
+    .rx-table th:nth-child(5), .rx-table td:nth-child(5) { width: 13%; }
+    .rx-table th:nth-child(6), .rx-table td:nth-child(6) { width: 35%; }
     .rx-notes { margin: 12px 0; }
     .rx-sign { margin-top: 48px; text-align: right; }
   `]
