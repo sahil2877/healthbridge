@@ -36,8 +36,15 @@ async function getOrCreateSelfPatient(user) {
     return patient;
   }
 
-  // 4 — no match found, create a fresh minimal record
-  return Patient.create({ name: user.name, email: user.email, user: user.id });
+  // 4 — no match found, create a fresh minimal record.
+  // Use an atomic findOneAndUpdate upsert keyed on `user` so that concurrent
+  // requests (e.g. the portal firing several API calls at once right after login)
+  // can never create more than one Patient document for the same user.
+  return Patient.findOneAndUpdate(
+    { user: user.id },
+    { $setOnInsert: { name: user.name, email: user.email, user: user.id } },
+    { new: true, upsert: true }
+  );
 }
 
 module.exports = { getOrCreateSelfPatient };

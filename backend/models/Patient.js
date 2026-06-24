@@ -32,4 +32,8 @@ const patientSchema = new mongoose.Schema({
   onboardedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 
+// A user can have at most ONE clinical Patient record. `sparse` lets
+// provider-onboarded patients (no `user` link) coexist freely.
+patientSchema.index({ user: 1 }, { unique: true, sparse: true });
+
 module.exports = mongoose.model('Patient', patientSchema);

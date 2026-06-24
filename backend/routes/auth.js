@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Patient = require('../models/Patient');
 
 // Helper: creates a JWT token
 function createToken(user) {
@@ -17,7 +18,7 @@ function createToken(user) {
 // @desc   Create a new user
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, age, gender, phone, bloodGroup } = req.body;
 
     // Check whether the email already exists
     const existing = await User.findOne({ email });
@@ -28,6 +29,22 @@ router.post('/register', async (req, res) => {
     const hashed = await bcrypt.hash(password, salt);
 
     const user = await User.create({ name, email, password: hashed, role });
+
+    // For a patient signup, create their clinical Patient record ONCE here with the
+    // details they entered. This is the single source of truth and prevents the
+    // portal from lazily creating duplicate blank records later (race condition).
+    if (role === 'patient') {
+      await Patient.create({
+        name,
+        email,
+        age:        age || undefined,
+        gender:     gender || undefined,
+        phone:      phone || undefined,
+        bloodGroup: bloodGroup || 'Unknown',
+        user:       user._id
+      });
+    }
+
     const token = createToken(user);
 
     res.status(201).json({

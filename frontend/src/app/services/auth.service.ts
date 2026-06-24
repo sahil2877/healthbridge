@@ -15,7 +15,12 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // POST /api/auth/register
-  register(data: { name: string; email: string; password: string; role: string }): Observable<AuthResponse> {
+  // Patient signups also send age/gender/phone/bloodGroup so the backend can
+  // create their clinical record in one shot.
+  register(data: {
+    name: string; email: string; password: string; role: string;
+    age?: number | null; gender?: string; phone?: string; bloodGroup?: string;
+  }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.api}/register`, data).pipe(
       tap((res) => this.saveSession(res))
     );
