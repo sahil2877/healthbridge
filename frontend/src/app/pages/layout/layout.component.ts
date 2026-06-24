@@ -59,6 +59,9 @@ import { NotificationBellComponent } from '../../shared/notification-bell.compon
 
           <ng-container *ngIf="auth.hasRole('admin')">
             <div class="sidebar-section-label">System</div>
+            <a class="nav-item" routerLink="/users" routerLinkActive="active">
+              <i class="fa-solid fa-users-gear"></i><span>User Management</span>
+            </a>
             <a class="nav-item" routerLink="/audit" routerLinkActive="active">
               <i class="fa-solid fa-list-check"></i><span>Audit Logs</span>
             </a>

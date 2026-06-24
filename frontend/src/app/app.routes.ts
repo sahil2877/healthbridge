@@ -22,6 +22,7 @@ import { LabOrdersComponent } from './pages/lab-orders/lab-orders.component';
 import { ConsultationListComponent } from './pages/consultations/consultation-list.component';
 import { VideoRoomComponent } from './pages/room/video-room.component';
 import { AuditComponent } from './pages/audit/audit.component';
+import { UserManagementComponent } from './pages/user-management/user-management.component';
 import { InsuranceComponent } from './pages/insurance/insurance.component';
 import { PolicyFormComponent } from './pages/insurance/policy-form.component';
 import { ClaimFormComponent } from './pages/insurance/claim-form.component';
@@ -107,7 +108,8 @@ export const routes: Routes = [
       { path: 'insurance/claims/new', component: ClaimFormComponent },
       { path: 'insurance/claims/:id/edit', component: ClaimFormComponent },
 
-      { path: 'audit', component: AuditComponent }
+      { path: 'audit', component: AuditComponent },
+      { path: 'users', component: UserManagementComponent, canActivate: [roleGuard('admin')] }
     ]
   },
 
