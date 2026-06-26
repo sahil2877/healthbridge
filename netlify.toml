@@ -1,0 +1,14 @@
+# Netlify configuration for the HealthBridge Angular frontend.
+# The backend (Express API) is deployed separately on Render.
+
+[build]
+  base = "frontend"
+  command = "npm install && npm run build -- --configuration production"
+  publish = "dist/frontend/browser"
+
+# Angular is a single-page app: every route must fall back to index.html
+# so deep links (e.g. /portal, /admin/users) work on refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

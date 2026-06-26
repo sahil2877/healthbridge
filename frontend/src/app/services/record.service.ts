@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -5,7 +6,7 @@ import { ClinicalRecord } from '../models/record.model';
 
 @Injectable({ providedIn: 'root' })
 export class RecordService {
-  private api = 'http://localhost:5000/api/records';
+  private api = `${environment.apiBase}/api/records`;
 
   constructor(private http: HttpClient) {}
 

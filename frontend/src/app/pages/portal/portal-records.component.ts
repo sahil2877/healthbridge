@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PrescriptionService } from '../../services/prescription.service';
@@ -127,6 +128,6 @@ export class PortalRecordsComponent implements OnInit {
   }
 
   fileUrl(url: string): string {
-    return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+    return url.startsWith('http') ? url : `${environment.apiBase}${url}`;
   }
 }

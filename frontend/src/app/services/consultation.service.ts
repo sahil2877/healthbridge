@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -6,7 +7,7 @@ import { User } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class ConsultationService {
-  private api = 'http://localhost:5000/api/consultations';
+  private api = `${environment.apiBase}/api/consultations`;
 
   constructor(private http: HttpClient) {}
 

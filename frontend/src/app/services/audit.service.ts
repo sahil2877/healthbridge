@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -5,7 +6,7 @@ import { AuditLog } from '../models/audit.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuditService {
-  private api = 'http://localhost:5000/api/audit';
+  private api = `${environment.apiBase}/api/audit`;
 
   constructor(private http: HttpClient) {}
 

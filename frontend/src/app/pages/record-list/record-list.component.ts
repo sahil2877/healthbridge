@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -149,7 +150,7 @@ export class RecordListComponent implements OnInit {
 
   // Documents are served from the backend host (port 5000), not the Angular host
   fileUrl(url: string): string {
-    return `http://localhost:5000${url}`;
+    return `${environment.apiBase}${url}`;
   }
 
   canDelete(): boolean {

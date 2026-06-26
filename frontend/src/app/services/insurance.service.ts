@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -5,7 +6,7 @@ import { Claim, InsurancePolicy } from '../models/insurance.model';
 
 @Injectable({ providedIn: 'root' })
 export class InsuranceService {
-  private api = 'http://localhost:5000/api/insurance';
+  private api = `${environment.apiBase}/api/insurance`;
 
   constructor(private http: HttpClient) {}
 

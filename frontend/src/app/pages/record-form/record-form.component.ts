@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -198,7 +199,7 @@ export class RecordFormComponent implements OnInit {
   }
 
   fileUrl(url: string): string {
-    return `http://localhost:5000${url}`;
+    return `${environment.apiBase}${url}`;
   }
 
   upload(): void {

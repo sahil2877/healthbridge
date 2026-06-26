@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
@@ -5,7 +6,7 @@ import { AuthResponse, User } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:5000/api/auth';
+  private api = `${environment.apiBase}/api/auth`;
   private tokenKey = 'hb_token';
   private userKey = 'hb_user';
 

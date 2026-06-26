@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -17,7 +18,7 @@ export interface NewUser {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private api = 'http://localhost:5000/api/users';
+  private api = `${environment.apiBase}/api/users`;
 
   constructor(private http: HttpClient) {}
 
