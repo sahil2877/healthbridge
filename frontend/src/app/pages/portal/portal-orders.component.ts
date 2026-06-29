@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { RouterLink } from '@angular/router';
 import { LabService } from '../../services/lab.service';
 import { LabOrder, LAB_STATUS_STEPS } from '../../models/lab.model';
@@ -8,7 +9,7 @@ import { LabOrder, LAB_STATUS_STEPS } from '../../models/lab.model';
 @Component({
   selector: 'app-portal-orders',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -20,7 +21,7 @@ import { LabOrder, LAB_STATUS_STEPS } from '../../models/lab.model';
       </div>
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-      <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div>
+      <app-skeleton *ngIf="loading" type="list"></app-skeleton>
       <div class="empty-state" *ngIf="!loading && orders.length === 0">
         <i class="fa-solid fa-box-open"></i>
         <p>No orders yet. Book a test to get started.</p>

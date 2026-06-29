@@ -1,6 +1,7 @@
 import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { PrescriptionService } from '../../services/prescription.service';
 import { RecordService } from '../../services/record.service';
 import { InvoiceService } from '../../services/invoice.service';
@@ -15,7 +16,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-portal-records',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -32,7 +33,7 @@ import { User } from '../../models/user.model';
         <button class="tab" [class.active]="tab === 'bills'" (click)="tab = 'bills'"><i class="fa-solid fa-receipt"></i> Bills ({{ invoices.length }})</button>
       </div>
 
-      <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading your records...</p></div>
+      <app-skeleton *ngIf="loading" type="list"></app-skeleton>
 
       <!-- Prescriptions -->
       <div *ngIf="tab === 'rx' && !loading">

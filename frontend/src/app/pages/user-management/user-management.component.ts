@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
@@ -9,7 +10,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -37,10 +38,7 @@ import { User } from '../../models/user.model';
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-        <div class="empty-state" *ngIf="loading">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-          <p>Loading users...</p>
-        </div>
+        <app-skeleton *ngIf="loading"></app-skeleton>
         <div class="empty-state" *ngIf="!loading && filtered().length === 0">
           <i class="fa-solid fa-users"></i>
           <p>No users found.</p>

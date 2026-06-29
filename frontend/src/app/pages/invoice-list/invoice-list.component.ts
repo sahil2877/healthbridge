@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { InvoiceService } from '../../services/invoice.service';
@@ -10,7 +11,7 @@ import { Patient } from '../../models/patient.model';
 @Component({
   selector: 'app-invoice-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -52,10 +53,7 @@ import { Patient } from '../../models/patient.model';
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-        <div class="empty-state" *ngIf="loading">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-          <p>Loading invoices...</p>
-        </div>
+        <app-skeleton *ngIf="loading"></app-skeleton>
         <div class="empty-state" *ngIf="!loading && invoices.length === 0">
           <i class="fa-solid fa-file-invoice-dollar"></i>
           <p>No invoices found.</p>

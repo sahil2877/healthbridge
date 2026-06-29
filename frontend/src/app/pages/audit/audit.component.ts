@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormsModule } from '@angular/forms';
 import { AuditService } from '../../services/audit.service';
 import { AuditLog } from '../../models/audit.model';
@@ -8,7 +9,7 @@ import { AuditLog } from '../../models/audit.model';
 @Component({
   selector: 'app-audit',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -34,10 +35,7 @@ import { AuditLog } from '../../models/audit.model';
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-        <div class="empty-state" *ngIf="loading">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-          <p>Loading audit logs...</p>
-        </div>
+        <app-skeleton *ngIf="loading"></app-skeleton>
         <div class="empty-state" *ngIf="!loading && logs.length === 0">
           <i class="fa-solid fa-clipboard-list"></i>
           <p>No audit entries found.</p>

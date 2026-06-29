@@ -14,6 +14,9 @@ import { AuthService } from '../../services/auth.service';
         <div class="auth-brand"><span class="logo">🏥 HealthBridge</span></div>
         <p class="auth-sub">Sign in to your account</p>
 
+        <!-- Indeterminate top bar while the sign-in request is in flight -->
+        <div class="auth-progress" *ngIf="loading"><span></span></div>
+
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
@@ -34,6 +37,7 @@ import { AuthService } from '../../services/auth.service';
           </div>
 
           <button class="btn btn-primary btn-block" type="submit" [disabled]="loading">
+            <i class="fa-solid fa-spinner fa-spin" *ngIf="loading"></i>
             {{ loading ? 'Signing in...' : 'Sign In' }}
           </button>
         </form>

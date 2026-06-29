@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { RouterLink } from '@angular/router';
 import { AnalyticsService } from '../../services/analytics.service';
 import { AnalyticsOverview } from '../../models/analytics.model';
@@ -13,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -27,7 +28,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-      <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading dashboard...</p></div>
+      <app-skeleton *ngIf="loading" type="cards"></app-skeleton>
 
       <div *ngIf="data">
         <!-- Stat cards -->

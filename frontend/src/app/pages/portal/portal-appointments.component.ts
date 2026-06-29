@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
 import { ConsultationService } from '../../services/consultation.service';
@@ -13,7 +14,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-portal-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -60,7 +61,7 @@ import { User } from '../../models/user.model';
       <!-- My appointments -->
       <div class="portal-h">Upcoming &amp; Past</div>
       <div class="empty-state" *ngIf="!loading && appointments.length === 0"><i class="fa-solid fa-calendar"></i><p>No appointments yet.</p></div>
-      <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div>
+      <app-skeleton *ngIf="loading" type="list"></app-skeleton>
 
       <div class="appt-card" *ngFor="let a of appointments">
         <div class="doctor-avatar" [style.background]="'var(--gradient-2)'">{{ initials(doctorName(a)) }}</div>

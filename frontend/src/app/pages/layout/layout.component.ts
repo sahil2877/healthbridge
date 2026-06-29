@@ -67,14 +67,6 @@ import { NotificationBellComponent } from '../../shared/notification-bell.compon
             </a>
           </ng-container>
         </nav>
-
-        <div class="sidebar-footer">
-          <div class="upgrade-card">
-            <h4><i class="fa-solid fa-crown"></i> HealthBridge Pro</h4>
-            <p>Unlock advanced AI diagnostics &amp; unlimited patients.</p>
-            <button (click)="$event.stopPropagation()">Upgrade Plan</button>
-          </div>
-        </div>
       </aside>
 
       <!-- ============ MAIN ============ -->

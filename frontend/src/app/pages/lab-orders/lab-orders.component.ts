@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormsModule } from '@angular/forms';
 import { LabService } from '../../services/lab.service';
 import { LabOrder } from '../../models/lab.model';
@@ -9,7 +10,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-lab-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -33,10 +34,7 @@ import { User } from '../../models/user.model';
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-        <div class="empty-state" *ngIf="loading">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-          <p>Loading lab orders...</p>
-        </div>
+        <app-skeleton *ngIf="loading"></app-skeleton>
         <div class="empty-state" *ngIf="!loading && orders.length === 0">
           <i class="fa-solid fa-flask"></i>
           <p>No orders found.</p>

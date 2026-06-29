@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -10,7 +11,7 @@ import { Patient } from '../../models/patient.model';
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -42,7 +43,7 @@ import { Patient } from '../../models/patient.model';
           <p>No patients found. Click <strong>Onboard Patient</strong> to add one.</p>
         </div>
 
-        <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div>
+        <app-skeleton *ngIf="loading"></app-skeleton>
 
         <div class="table-wrap" *ngIf="!loading && patients.length > 0">
           <table>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConsultationService } from '../../services/consultation.service';
@@ -11,7 +12,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-consultation-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -23,10 +24,7 @@ import { User } from '../../models/user.model';
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-      <div class="empty-state" *ngIf="loading">
-        <i class="fa-solid fa-spinner fa-spin"></i>
-        <p>Loading consultations...</p>
-      </div>
+      <app-skeleton *ngIf="loading"></app-skeleton>
 
       <div class="empty-state" *ngIf="!loading && consults.length === 0">
         <i class="fa-solid fa-video"></i>

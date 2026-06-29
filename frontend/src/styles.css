@@ -1269,3 +1269,25 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   .app .main, .content, .portal-main { margin: 0 !important; padding: 0 !important; max-width: 100%; }
   .card { border: none; box-shadow: none; }
 }
+
+/* ===== Auth indeterminate progress bar (login / register) ===== */
+.auth-progress {
+  height: 3px;
+  width: 100%;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.15);
+  overflow: hidden;
+  margin: 4px 0 16px;
+}
+.auth-progress span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6366f1, #22d3ee);
+  animation: auth-bar 1.1s ease-in-out infinite;
+}
+@keyframes auth-bar {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}

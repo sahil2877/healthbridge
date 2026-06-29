@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SkeletonComponent } from '../../components/skeleton.component';
 import { Router } from '@angular/router';
 import { LabService } from '../../services/lab.service';
 import { LabPackage } from '../../models/lab.model';
@@ -9,7 +10,7 @@ import { TEST_CATEGORIES } from '../../data/catalog';
 @Component({
   selector: 'app-portal-care',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SkeletonComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -38,7 +39,7 @@ import { TEST_CATEGORIES } from '../../data/catalog';
       </div>
 
       <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-      <div class="empty-state" *ngIf="loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading catalog...</p></div>
+      <app-skeleton *ngIf="loading" type="cards"></app-skeleton>
 
       <div class="empty-state" *ngIf="!loading && packages.length === 0">
         <i class="fa-solid fa-flask-vial"></i><p>No packages in this category yet.</p>
