@@ -18,7 +18,13 @@ function createToken(user) {
 // @desc   Create a new user
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, age, gender, phone, bloodGroup } = req.body;
+    const { name, email, password, age, gender, phone, bloodGroup } = req.body;
+
+    // SECURITY: public self-registration can ONLY create a patient. The role from
+    // the request body is deliberately ignored — staff, doctor and admin accounts
+    // are provisioned by an admin via the User Management endpoints, never here.
+    // Without this, anyone could POST role:'admin' and gain full access.
+    const role = 'patient';
 
     // Check whether the email already exists
     const existing = await User.findOne({ email });
@@ -30,10 +36,10 @@ router.post('/register', async (req, res) => {
 
     const user = await User.create({ name, email, password: hashed, role });
 
-    // For a patient signup, create their clinical Patient record ONCE here with the
-    // details they entered. This is the single source of truth and prevents the
-    // portal from lazily creating duplicate blank records later (race condition).
-    if (role === 'patient') {
+    // Create the patient's clinical Patient record ONCE here with the details they
+    // entered. This is the single source of truth and prevents the portal from
+    // lazily creating duplicate blank records later (race condition).
+    {
       await Patient.create({
         name,
         email,

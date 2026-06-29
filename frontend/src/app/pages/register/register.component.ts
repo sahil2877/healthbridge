@@ -12,14 +12,14 @@ import { AuthService } from '../../services/auth.service';
     <div class="auth-wrap">
       <div class="card auth-card">
         <div class="auth-brand"><span class="logo">🏥 HealthBridge</span></div>
-        <p class="auth-sub">{{ isPatient ? 'Create your patient account' : 'Create a staff account' }}</p>
+        <p class="auth-sub">Create your patient account</p>
 
         <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="form-group">
             <label>Full Name</label>
-            <input class="form-control" type="text" formControlName="name" [placeholder]="isPatient ? 'Rajesh Mehta' : 'Dr. Asha Mehta'" />
+            <input class="form-control" type="text" formControlName="name" placeholder="Rajesh Mehta" />
             <div class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
               Name required
             </div>
@@ -33,28 +33,19 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Password</label>
-              <input class="form-control" type="password" formControlName="password" placeholder="min 6 chars" />
-              <div class="field-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
-                Min 6 characters
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Role</label>
-              <select class="form-control" formControlName="role">
-                <option value="patient">Patient</option>
-                <option value="staff">Staff</option>
-                <option value="doctor">Doctor</option>
-                <option value="admin">Admin</option>
-              </select>
+          <div class="form-group">
+            <label>Password</label>
+            <input class="form-control" type="password" formControlName="password" placeholder="min 6 chars" />
+            <div class="field-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+              Min 6 characters
             </div>
           </div>
 
-          <!-- Patient-only clinical details — captured once at signup so the
-               patient record is complete and never duplicated later. -->
-          <ng-container *ngIf="isPatient">
+          <!-- This public page is patient-signup ONLY. Staff, doctor and admin
+               accounts are created by an admin from the User Management page —
+               never self-registered. Clinical details are captured once here so
+               the patient record is complete and never duplicated later. -->
+          <ng-container>
             <div class="form-row">
               <div class="form-group">
                 <label>Age</label>
@@ -105,45 +96,22 @@ export class RegisterComponent implements OnInit {
   error = '';
   bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'Unknown'];
 
+  // Public signup is always a patient. Staff/doctor/admin are provisioned by an
+  // admin from User Management, so `role` is fixed here and not user-selectable.
   form = this.fb.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    role: ['patient', Validators.required],
-    // Patient-only fields (validators toggled in ngOnInit based on role)
-    age: [null as number | null],
+    // Patient clinical details — always required on this page.
+    age: [null as number | null, [Validators.required, Validators.min(0), Validators.max(150)]],
     gender: ['Male'],
-    phone: [''],
+    phone: ['', Validators.required],
     bloodGroup: ['Unknown']
   });
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {}
 
-  get isPatient(): boolean {
-    return this.form.get('role')?.value === 'patient';
-  }
-
-  ngOnInit(): void {
-    // Age & phone are required only for patients — wire validators to the role.
-    this.applyPatientValidators(this.isPatient);
-    this.form.get('role')?.valueChanges.subscribe((role) => {
-      this.applyPatientValidators(role === 'patient');
-    });
-  }
-
-  private applyPatientValidators(on: boolean): void {
-    const age = this.form.get('age');
-    const phone = this.form.get('phone');
-    if (on) {
-      age?.setValidators([Validators.required, Validators.min(0), Validators.max(150)]);
-      phone?.setValidators([Validators.required]);
-    } else {
-      age?.clearValidators();
-      phone?.clearValidators();
-    }
-    age?.updateValueAndValidity();
-    phone?.updateValueAndValidity();
-  }
+  ngOnInit(): void {}
 
   submit(): void {
     if (this.form.invalid) {
@@ -154,14 +122,13 @@ export class RegisterComponent implements OnInit {
     this.error = '';
 
     const v = this.form.getRawValue();
-    // Only send patient detail fields for a patient signup
-    const payload = this.isPatient
-      ? { name: v.name!, email: v.email!, password: v.password!, role: v.role!,
-          age: v.age, gender: v.gender!, phone: v.phone!, bloodGroup: v.bloodGroup! }
-      : { name: v.name!, email: v.email!, password: v.password!, role: v.role! };
+    const payload = {
+      name: v.name!, email: v.email!, password: v.password!, role: 'patient',
+      age: v.age, gender: v.gender!, phone: v.phone!, bloodGroup: v.bloodGroup!
+    };
 
     this.auth.register(payload).subscribe({
-      next: () => this.router.navigate([this.auth.hasRole('patient') ? '/portal/home' : '/patients']),
+      next: () => this.router.navigate(['/portal/home']),
       error: (err) => {
         this.error = err?.error?.message || 'Registration failed. Please try again.';
         this.loading = false;
